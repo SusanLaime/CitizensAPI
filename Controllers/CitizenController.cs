@@ -119,11 +119,8 @@ public class CitizenController : ControllerBase
         }
         else
         {
-            citizenToUpdate.CI = citizenData.CI;
             citizenToUpdate.FirstName = citizenData.FirstName;
             citizenToUpdate.LastName = citizenData.LastName;
-            citizenToUpdate.BloodGroup = citizenData.BloodGroup;
-            citizenToUpdate.PersonalAsset = citizenData.PersonalAsset;
 
             //UPDATE THE LIST
             CSVHelper.WriteCSV(_configuration["Data:Location"], _citizensList.Select(c => new string[]
