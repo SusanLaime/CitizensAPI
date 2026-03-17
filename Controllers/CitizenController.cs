@@ -3,35 +3,62 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class CitizenController : ControllerBase
 {
-
     private List<Citizen> _citizensList;
-    //Initialize the list
-    public CitizenController()
+    private IConfiguration _configuration;
+
+    public CitizenController(IConfiguration configuration)
     {
         _citizensList = new List<Citizen>();
-        Citizen citizen1 = new Citizen();
-        citizen1.FirstName = "Jonas";
-        citizen1.LastName = "Brothers";
-        citizen1.CI = 123456;
-        citizen1.BloodGroup = "A+";
-        citizen1.PersonalAsset = "House";
-        _citizensList.Add(citizen1);
+        _configuration = configuration;
 
-        _citizensList.Add(new Citizen
+        List<string[]> data = CSVHelper.ReadCSV(_configuration["Data:Location"]);
+
+        foreach (string[] row in data)
         {
-            FirstName = "Julia",
-            LastName = "Roberts",
-            CI = 654321,
-            BloodGroup = "A+",
-            PersonalAsset = "House"
-        });
+            if (row.Length < 5)
+            {
+                continue;
+            }
+
+            // Skip an optional header row if present, but keep real citizen data.
+            if (!int.TryParse(row[2], out int ci))
+            {
+                continue;
+            }
+
+            _citizensList.Add(new Citizen
+            {
+                FirstName = row[0],
+                LastName = row[1],
+                CI = ci,
+                BloodGroup = row[3],
+                PersonalAsset = row[4]
+            });
+        }
     }
 
     //C: Create
     [HttpPost]
     public IActionResult Post([FromBody] Citizen citizentoAdd)
     {
+        // Add data validation here
         _citizensList.Add(citizentoAdd);
+        List<string[]> data = new List<string[]>();
+
+        //Statefull to stateless app
+        for (int i = 0; i < _citizensList.Count; i++)
+        {
+            string[] citizenData = new string[]
+            { 
+                _citizensList[i].FirstName, 
+                _citizensList[i].LastName, 
+                _citizensList[i].CI.ToString(), 
+                _citizensList[i].BloodGroup, 
+                _citizensList[i].PersonalAsset 
+            };
+            data.Add(citizenData);
+        }
+        CSVHelper.WriteCSV(_configuration["Data:Location"], data);
         return Ok(_citizensList);
     }
 
@@ -80,6 +107,16 @@ public class CitizenController : ControllerBase
             citizenToUpdate.BloodGroup = citizenData.BloodGroup;
             citizenToUpdate.PersonalAsset = citizenData.PersonalAsset;
 
+            //UPDATE THE LIST
+            CSVHelper.WriteCSV(_configuration["Data:Location"], _citizensList.Select(c => new string[]
+            {
+                c.FirstName,
+                c.LastName,
+                c.CI.ToString(),
+                c.BloodGroup,
+                c.PersonalAsset
+            }).ToList());
+
             return Ok(_citizensList);
         }
     }
@@ -99,6 +136,15 @@ public class CitizenController : ControllerBase
         else
         {
             _citizensList.Remove(citizenToRemove);
+            //All the time, we overwrite the data of the file
+            CSVHelper.WriteCSV(_configuration["Data:Location"], _citizensList.Select(c => new string[]
+            {
+                c.FirstName,
+                c.LastName,
+                c.CI.ToString(),
+                c.BloodGroup,
+                c.PersonalAsset
+            }).ToList());
             return Ok(citizenToRemove);
         }
         
