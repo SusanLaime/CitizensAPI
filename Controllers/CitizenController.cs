@@ -50,7 +50,7 @@ public class CitizenController : ControllerBase
 
     //C: Create
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Citizen citizentoAdd)
+    public async Task<IActionResult> Post([FromBody] CreateCitizenRequest citizenRequest)
     {
         try
         {
@@ -60,14 +60,20 @@ public class CitizenController : ControllerBase
                 return StatusCode(503, "No personal assets are available from the external API.");
             }
 
-            if (_citizensList.Any(c => c.CI == citizentoAdd.CI))
+            if (_citizensList.Any(c => c.CI == citizenRequest.CI))
             {
-                return Conflict("Citizen already exists with CI: " + citizentoAdd.CI);
+                return Conflict("Citizen already exists with CI: " + citizenRequest.CI);
             }
 
             CitizenBG selectedAsset = personalAssets[Random.Shared.Next(personalAssets.Count)];
-            citizentoAdd.BloodGroup = BloodGroups.Allowed[Random.Shared.Next(BloodGroups.Allowed.Length)];
-            citizentoAdd.PersonalAsset = string.IsNullOrWhiteSpace(selectedAsset.name) ? selectedAsset.id : selectedAsset.name;
+            Citizen citizentoAdd = new Citizen
+            {
+                FirstName = citizenRequest.FirstName,
+                LastName = citizenRequest.LastName,
+                CI = citizenRequest.CI,
+                BloodGroup = BloodGroups.Allowed[Random.Shared.Next(BloodGroups.Allowed.Length)],
+                PersonalAsset = string.IsNullOrWhiteSpace(selectedAsset.name) ? selectedAsset.id : selectedAsset.name
+            };
 
             _citizensList.Add(citizentoAdd);
             List<string[]> data = new List<string[]>();
@@ -123,16 +129,16 @@ public class CitizenController : ControllerBase
     }
 
     [HttpPut]
-    [Route("{ci1}/{ci2}")]
+    [Route("{ci}")]
     //U: Update
-    public IActionResult Put([FromRoute] int ci1, [FromRoute] int ci2, [FromBody] Citizen citizenData)
+    public IActionResult Put([FromRoute] int ci, [FromBody] UpdateCitizenRequest citizenData)
     {
         try
         {
-            Citizen citizenToUpdate = _citizensList.Find(c => c.CI == ci1);
+            Citizen citizenToUpdate = _citizensList.Find(c => c.CI == ci);
             if (citizenToUpdate == null)
             {
-                return Ok("Citizen not found with CI: " + ci1);
+                return Ok("Citizen not found with CI: " + ci);
             }
 
             citizenToUpdate.FirstName = citizenData.FirstName;
@@ -147,12 +153,12 @@ public class CitizenController : ControllerBase
                 c.PersonalAsset
             }).ToList());
 
-            _logger.LogInformation("Citizen updated with CI: {CitizenCI}", ci1);
+            _logger.LogInformation("Citizen updated with CI: {CitizenCI}", ci);
             return Ok(_citizensList);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating citizen with CI: {CitizenCI}", ci1);
+            _logger.LogError(ex, "Error updating citizen with CI: {CitizenCI}", ci);
             return StatusCode(500, "Internal server error.");
         }
     }

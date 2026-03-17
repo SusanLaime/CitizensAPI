@@ -258,6 +258,7 @@ These tasks should be executed independently and not embedded into normal API re
 
 Behavior:
 
+- request body only includes `FirstName`, `LastName`, and `CI`
 - validates duplicate CI
 - assigns random blood group
 - calls external API
@@ -274,10 +275,11 @@ Behavior:
 
 ### Update Citizen
 
-- `PUT /api/Citizen/{ci1}/{ci2}`
+- `PUT /api/Citizen/{ci}`
 
 Business rule:
 
+- request body only includes `FirstName` and `LastName`
 - only `FirstName` and `LastName` are updated
 
 ### Delete Citizen
