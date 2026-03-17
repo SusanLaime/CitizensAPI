@@ -57,6 +57,7 @@ public class CitizenController : ControllerBase
         }
 
         CitizenBG selectedAsset = personalAssets[Random.Shared.Next(personalAssets.Count)];
+        citizentoAdd.BloodGroup = BloodGroups.Allowed[Random.Shared.Next(BloodGroups.Allowed.Length)];
         citizentoAdd.PersonalAsset = string.IsNullOrWhiteSpace(selectedAsset.name) ? selectedAsset.id : selectedAsset.name;
 
         _citizensList.Add(citizentoAdd);
