@@ -1,4 +1,4 @@
-using System.Text.Json;
+using Newtonsoft.Json;
 
 public class CitizenBGService
 {
@@ -10,15 +10,17 @@ public class CitizenBGService
        _httpClient.BaseAddress = new Uri(configuration["External Services:ObjectsApi:BaseUrl"]);
    }
 
-   public List<CitizenBG> GetCitizenBGs()
+   public async Task<List<CitizenBG>> GetCitizenBGs()
    {
        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "objects");
-       var response = _httpClient.Send(request);
+       //await will automatically force to respond the server: ASYNC await
+       var response = await _httpClient.SendAsync(request);
 
        if (response.IsSuccessStatusCode)
        {
            string responseContent = response.Content.ReadAsStringAsync().Result;
-           List<CitizenBG>? citizenBGs = JsonSerializer.Deserialize<List<CitizenBG>>(responseContent);
+           //Change library to Newtonsoft.Json for deserialization
+           List<CitizenBG>? citizenBGs = JsonConvert.DeserializeObject<List<CitizenBG>>(responseContent);
            return citizenBGs ?? new List<CitizenBG>();
        }
        else

@@ -43,7 +43,9 @@ public class CitizenController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] Citizen citizentoAdd)
     {
-        List<CitizenBG> personalAssets = _citizenBGService.GetCitizenBGs();
+        //Adding result will give you the result of your homework
+        //Managing threads with ASYNC and AWAIT
+        List<CitizenBG> personalAssets = _citizenBGService.GetCitizenBGs().Result;
         if (personalAssets.Count == 0)
         {
             return StatusCode(503, "No personal assets are available from the external API.");
