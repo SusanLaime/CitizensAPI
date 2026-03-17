@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class CitizenController : ControllerBase
 {
-    private List<Citizen> _citizensList;
-    private IConfiguration _configuration;
+    private readonly List<Citizen> _citizensList;
+    private readonly IConfiguration _configuration;
+    private readonly CitizenBGService _citizenBGService;
 
-    public CitizenController(IConfiguration configuration)
+    public CitizenController(IConfiguration configuration, CitizenBGService citizenBGService)
     {
         _citizensList = new List<Citizen>();
         _configuration = configuration;
+        _citizenBGService = citizenBGService;
 
         List<string[]> data = CSVHelper.ReadCSV(_configuration["Data:Location"]);
 
@@ -41,7 +43,20 @@ public class CitizenController : ControllerBase
     [HttpPost]
     public IActionResult Post([FromBody] Citizen citizentoAdd)
     {
-        // Add data validation here
+        List<CitizenBG> personalAssets = _citizenBGService.GetCitizenBGs();
+        if (personalAssets.Count == 0)
+        {
+            return StatusCode(503, "No personal assets are available from the external API.");
+        }
+
+        if (_citizensList.Any(c => c.CI == citizentoAdd.CI))
+        {
+            return Conflict("Citizen already exists with CI: " + citizentoAdd.CI);
+        }
+
+        CitizenBG selectedAsset = personalAssets[Random.Shared.Next(personalAssets.Count)];
+        citizentoAdd.PersonalAsset = string.IsNullOrWhiteSpace(selectedAsset.name) ? selectedAsset.id : selectedAsset.name;
+
         _citizensList.Add(citizentoAdd);
         List<string[]> data = new List<string[]>();
 

@@ -13,6 +13,7 @@ builder.Services.AddOpenApi();
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<CitizenBGService>();
 
 //Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
