@@ -87,7 +87,7 @@ Las decisiones de arquitectura, el flujo de configuración, el modelo de ejecuci
 Program.cs
    |
    v
-Configuration + Serilog + Service Registration
+Configuration + Serilog + Dependencies Registration
    |
    v
 CitizenController
@@ -393,7 +393,15 @@ Antes de ejecutar el proyecto, asegúrate de contar con:
 ### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone <repository-url>
+# SSH
+git clone git@github.com:SusanLaime/CitizensAPI.git
+cd CitizensAPI
+```
+
+or 
+```bash
+#HTTPS
+git clone https://github.com/SusanLaime/CitizensAPI.git
 cd CitizensAPI
 ```
 
