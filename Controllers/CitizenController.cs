@@ -7,29 +7,31 @@ public class CitizenController : ControllerBase
     private readonly List<Citizen> _citizensList;
     private readonly IConfiguration _configuration;
     private readonly CitizenBGService _citizenBGService;
-    private readonly ILogger<CitizenController> _logger;
 
-    public CitizenController(IConfiguration configuration, CitizenBGService citizenBGService, ILogger<CitizenController> logger)
+    public CitizenController(IConfiguration configuration, CitizenBGService citizenBGService)
     {
         _citizensList = new List<Citizen>();
         _configuration = configuration;
         _citizenBGService = citizenBGService;
-        _logger = logger;
 
         try
         {
-            List<string[]> data = CSVHelper.ReadCSV(_configuration["Data:Location"]);
+            string? dataLocation = _configuration["Data:Location"];
+            Log.Debug("Loading citizens from CSV path {CsvPath}.", dataLocation);
+            List<string[]> data = CSVHelper.ReadCSV(dataLocation);
 
             foreach (string[] row in data)
             {
                 if (row.Length < 5)
                 {
+                    Log.Warning("Skipping malformed CSV row because it has {ColumnCount} columns.", row.Length);
                     continue;
                 }
 
                 // Skip an optional header row if present, but keep real citizen data.
                 if (!int.TryParse(row[2], out int ci))
                 {
+                    Log.Debug("Skipping CSV row because CI value {CitizenCI} is not numeric.", row[2]);
                     continue;
                 }
 
@@ -42,10 +44,12 @@ public class CitizenController : ControllerBase
                     PersonalAsset = row[4]
                 });
             }
+
+            Log.Information("Loaded {CitizenCount} citizens from CSV.", _citizensList.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error reading citizens file.");
+            Log.Error(ex, "Error reading citizens file during controller initialization.");
         }
     }
 
@@ -55,14 +59,17 @@ public class CitizenController : ControllerBase
     {
         try
         {
+            Log.Debug("Creating citizen request received for CI {CitizenCI}.", citizenRequest.CI);
             List<CitizenBG> personalAssets = await _citizenBGService.GetCitizenBGs();
             if (personalAssets.Count == 0)
             {
+                Log.Warning("Citizen creation stopped because the external API returned no personal assets.");
                 return StatusCode(503, "No personal assets are available from the external API.");
             }
 
             if (_citizensList.Any(c => c.CI == citizenRequest.CI))
             {
+                Log.Warning("Citizen creation rejected because CI {CitizenCI} already exists.", citizenRequest.CI);
                 return Conflict("Citizen already exists with CI: " + citizenRequest.CI);
             }
 
@@ -79,8 +86,7 @@ public class CitizenController : ControllerBase
             _citizensList.Add(citizentoAdd);
             List<string[]> data = new List<string[]>();
 
-            Log.Debug("Preparing to write citizen data to CSV. Total citizens: {CitizenCount}", _citizensList.Count);
-            Log.Information("Citizen created with CI: {CitizenCI}", citizentoAdd.CI);
+            Log.Debug("Preparing to write citizen data to CSV. Total citizens: {CitizenCount}.", _citizensList.Count);
 
             for (int i = 0; i < _citizensList.Count; i++)
             { 
@@ -96,12 +102,12 @@ public class CitizenController : ControllerBase
             }
 
             CSVHelper.WriteCSV(_configuration["Data:Location"], data);
-            _logger.LogInformation("Citizen created with CI: {CitizenCI}", citizentoAdd.CI);
+            Log.Information("Citizen created with CI {CitizenCI} and personal asset {PersonalAsset}.", citizentoAdd.CI, citizentoAdd.PersonalAsset);
             return Ok(_citizensList);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating citizen.");
+            Log.Error(ex, "Error creating citizen with CI {CitizenCI}.", citizenRequest.CI);
             return StatusCode(500, "Internal server error.");
         }
     }
@@ -110,6 +116,7 @@ public class CitizenController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
+        Log.Information("Returning {CitizenCount} citizens.", _citizensList.Count);
         return Ok(_citizensList);
     }
 
@@ -118,20 +125,18 @@ public class CitizenController : ControllerBase
     [Route("{id}")]
     public IActionResult Get([FromRoute] int id)
     {
+        Log.Debug("Searching citizen with CI {CitizenCI}.", id);
         Citizen foundCitizen = _citizensList.Find(c => c.CI == id);
         if (foundCitizen == null)
         {
-            //Instead of Not FOund because it is too generic
-            Log.Debug("Citizen with CI: {CitizenCI} not found.", id);
+            Log.Warning("Citizen with CI {CitizenCI} was not found.", id);
             return Ok("Citizen not found with CI: " + id);
         }
         else
         {
-            Log.Information("Citizen with CI: {CitizenCI} found.", foundCitizen.CI);
+            Log.Information("Citizen with CI {CitizenCI} found.", foundCitizen.CI);
             return Ok(foundCitizen);
         }
-
-        
     }
 
     [HttpPut]
@@ -141,9 +146,11 @@ public class CitizenController : ControllerBase
     {
         try
         {
+            Log.Debug("Updating citizen with CI {CitizenCI}.", ci);
             Citizen citizenToUpdate = _citizensList.Find(c => c.CI == ci);
             if (citizenToUpdate == null)
             {
+                Log.Warning("Citizen update skipped because CI {CitizenCI} was not found.", ci);
                 return Ok("Citizen not found with CI: " + ci);
             }
 
@@ -159,12 +166,12 @@ public class CitizenController : ControllerBase
                 c.PersonalAsset
             }).ToList());
 
-            _logger.LogInformation("Citizen updated with CI: {CitizenCI}", ci);
+            Log.Information("Citizen updated with CI {CitizenCI}.", ci);
             return Ok(_citizensList);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating citizen with CI: {CitizenCI}", ci);
+            Log.Error(ex, "Error updating citizen with CI {CitizenCI}.", ci);
             return StatusCode(500, "Internal server error.");
         }
     }
@@ -176,10 +183,12 @@ public class CitizenController : ControllerBase
     {
         try
         {
+            Log.Debug("Deleting citizen with CI {CitizenCI}.", ci);
             Citizen citizenToRemove = _citizensList.Find(c => c.CI == ci);
 
             if (citizenToRemove == null)
             {
+                Log.Warning("Citizen deletion skipped because CI {CitizenCI} was not found.", ci);
                 return Ok("Citizen not found with CI: " + ci);
             }
 
@@ -193,12 +202,12 @@ public class CitizenController : ControllerBase
                 c.PersonalAsset
             }).ToList());
 
-            _logger.LogInformation("Citizen deleted with CI: {CitizenCI}", ci);
+            Log.Information("Citizen deleted with CI {CitizenCI}.", ci);
             return Ok(citizenToRemove);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting citizen with CI: {CitizenCI}", ci);
+            Log.Error(ex, "Error deleting citizen with CI {CitizenCI}.", ci);
             return StatusCode(500, "Internal server error.");
         }
     }

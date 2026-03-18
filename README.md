@@ -28,83 +28,6 @@ It also integrates with the external API:
 
 This external API is used to assign a random `PersonalAsset` when creating a citizen.
 
-## Build, Release, Run
-
-### Build
-
-```bash
-dotnet build
-```
-
-### Run
-
-```bash
-dotnet run
-```
-
-### Launch Settings and Port
-
-The current repository is configured to run on port `9070`.
-
-This is defined in:
-
-- `Properties/launchSettings.json`
-
-Current launch configuration:
-
-```json
-{
-  "profiles": {
-    "https": {
-      "applicationUrl": "https://localhost:9070"
-    }
-  }
-}
-```
-
-### Swagger
-
-When the application runs in development mode, Swagger UI is enabled and can be used to test the endpoints from the browser.
-
-Swagger is enabled only in development mode, knowing that Swagger is useful for development and testing, but should not be unnecessarily exposed in production.
-
-## Configuration
-
-Configuration is stored outside the code through:
-
-- `appsettings.json`
-- `appsettings.Development.json`
-- environment variables
-
-Current configuration includes:
-
-- CSV file location
-- external API base URL and URI
-- logging configuration
-
-Example:
-
-```json
-{
-  "Data": {
-    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
-  },
-  "External Services": {
-    "ObjectsApi": {
-      "BaseUrl": "https://api.restful-api.dev/"
-    }
-  }
-}
-```
-
-The configuration loading is explicit in `Program.cs`:
-
-- `appsettings.json`
-- `appsettings.Development.json`
-- environment variables
-
-instead of hardcoding those values in the application logic.
-
 ## Architecture Notes
 
 ### Controller-Based Structure
@@ -119,7 +42,7 @@ This helps organize the API in a more scalable and maintainable way for larger o
 
 > One codebase tracked in revision control, many deploys.
 
-The project is managed in a single Git repository.
+The project is managed in a single Git repository and published in GitHub.
 Development was done through Git commits on the practice branch `P2-001`.
 
 Keeping the project in a single public codebase in the cloud and pushing progress frequently is a good and professional practice so that development history remains visible.
@@ -128,13 +51,14 @@ Keeping the project in a single public codebase in the cloud and pushing progres
 
 > Explicitly declare and isolate dependencies.
 
-Dependencies are explicitly declared in `CitizensAPI.csproj`.
+Dependencies are explicitly declared in the manifesto file `CitizensAPI.csproj`.
 
 Main dependencies:
 
 - `Microsoft.AspNetCore.OpenApi`
 - `Swashbuckle.AspNetCore`
 - `Newtonsoft.Json`
+- `Serilog`
 
 ### 3. Config
 
@@ -149,6 +73,13 @@ Instead of hardcoding values directly in the controller or services, the applica
 - logging configuration
 
 from the configuration files and environment variables.
+
+In this project, the application first loads configuration from `appsettings.json` and `appsettings.Development.json`. After that, it also loads environment variables in `Program.cs` using `.AddEnvironmentVariables()`. This means environment variables can override values defined in the configuration files.
+
+A simple example is `ASPNETCORE_ENVIRONMENT`, defined in `launchSettings.json`. It tells the application that it is running in the `Development` environment. Because of that, the app loads development-specific settings and enables development features such as Swagger.
+
+This relates to the config section because environment variables are another way to provide configuration from outside the code. They allow the behavior of the application to change without modifying controllers or services. For example, values such as `Data:Location` and `External Services:ObjectsApi:BaseUrl` can be stored in configuration files during development, but replaced with environment variables in testing or production.
+
 
 ### 4. Backing Services
 
@@ -200,6 +131,22 @@ It can be accessed through the configured local port when running with `dotnet r
 In the current repository, the configured local endpoint is:
 
 - `https://localhost:9070`
+
+This is defined in:
+
+- `Properties/launchSettings.json`
+
+Current launch configuration:
+
+```json
+{
+  "profiles": {
+    "https": {
+      "applicationUrl": "https://localhost:9070"
+    }
+  }
+}
+```
 
 ### 8. Concurrency
 
@@ -258,6 +205,18 @@ The current implementation logs:
 - file read failures
 - API operation failures
 
+In this project, Serilog uses log levels to control which events are recorded. The order of severity starts with `Debug`, followed by `Information`, `Warning`, `Error`, and `Fatal`.
+
+When the `MinimumLevel` is set to `Debug`, the application does not log only debug messages. It logs all messages from `Debug` upward, including `Information`, `Warning`, `Error`, and `Fatal`. In other words, `Debug` acts as the lowest threshold, so every level above it is also included.
+
+This is useful in development because it allows detailed tracing of the application behavior, which helps during debugging.
+
+In the current implementation, `Debug` is used for internal flow tracing, such as loading the CSV file, searching for citizens, preparing file writes, and sending requests to the external API. `Information` is used for successful business events, such as loading citizens, creating a citizen, updating a citizen, deleting a citizen, or receiving valid data from the external API.
+
+`Warning` is used for situations that are important but do not break the application completely. For example, it is used when a citizen is not found, when a duplicate CI is detected, when the external API returns no available assets, or when malformed rows are found in the CSV file. `Error` is used in `try-catch` blocks and failure scenarios where an operation could not be completed correctly, such as file read failures, external API failures, or CRUD exceptions.
+
+This complements the Twelve-Factor idea of logs as event streams because the application is not only writing logs, but also classifying them by severity and purpose. In this way, logs become more useful for debugging, monitoring, maintenance, and understanding the behavior of the system during execution.
+
 ### 12. Admin Processes
 
 > Run admin/management tasks as one-off processes.
@@ -284,6 +243,69 @@ The logs provide useful support for maintenance and administration, but they do 
 In this project, a real admin task would be a separate one-time script or command for things like cleaning `CitizenDataStore.csv`, preloading sample citizens, repairing malformed rows, or migrating the CSV structure if the model changes.
 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
+
+Additionally, it will be redacted the configuration of this project.
+#### Configuration of the app
+## Build, Release, Run
+
+### Build
+
+```bash
+dotnet build
+```
+
+### Run
+
+```bash
+dotnet run
+```
+
+### Launch Settings and Port
+
+The current repository is configured to run on port `9070`.
+
+### Swagger
+
+When the application runs in development mode, Swagger UI is enabled and can be used to test the endpoints from the browser.
+
+Swagger is enabled only in development mode, knowing that Swagger is useful for development and testing, but should not be unnecessarily exposed in production.
+
+## Configuration
+
+Configuration is stored outside the code through:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- environment variables
+
+Current configuration includes:
+
+- CSV file location
+- external API base URL and URI
+- logging configuration
+
+Example:
+
+```json
+{
+  "Data": {
+    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
+  },
+  "External Services": {
+    "ObjectsApi": {
+      "BaseUrl": "https://api.restful-api.dev/"
+    }
+  }
+}
+```
+
+The configuration loading is explicit in `Program.cs`:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- environment variables
+
+instead of hardcoding those values in the application logic.
 
 
 ## API Endpoints
@@ -329,3 +351,5 @@ Business rule:
 - The CSV file is the persistence layer for this practice.
 - The current launch profile uses `https://localhost:9070`.
 - The repository follows the controller-oriented style explained in class instead of the minimal scripting style.
+
+All these configurations can be managed by the administrator.

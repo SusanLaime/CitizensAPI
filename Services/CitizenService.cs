@@ -1,15 +1,16 @@
 using Newtonsoft.Json;
+using Serilog;
 
 public class CitizenBGService
 {
    private readonly HttpClient _httpClient;
-   private readonly ILogger<CitizenBGService> _logger;
 
-   public CitizenBGService(IConfiguration configuration, ILogger<CitizenBGService> logger)
+   public CitizenBGService(IConfiguration configuration)
    {
-       _logger = logger;
        _httpClient = new HttpClient();
-       _httpClient.BaseAddress = new Uri(configuration["External Services:ObjectsApi:BaseUrl"]);
+       string? baseUrl = configuration["External Services:ObjectsApi:BaseUrl"];
+       Log.Debug("Configuring external citizen asset service with base URL {BaseUrl}.", baseUrl);
+       _httpClient.BaseAddress = new Uri(baseUrl);
    }
 
    public async Task<List<CitizenBG>> GetCitizenBGs()
@@ -17,22 +18,23 @@ public class CitizenBGService
        try
        {
            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "objects");
-           _logger.LogInformation("External API request executed for citizen personal assets.");
+           Log.Debug("Sending request to external API for citizen personal assets.");
 
            var response = await _httpClient.SendAsync(request);
            if (response.IsSuccessStatusCode)
            {
                string responseContent = await response.Content.ReadAsStringAsync();
                List<CitizenBG>? citizenBGs = JsonConvert.DeserializeObject<List<CitizenBG>>(responseContent);
+               Log.Information("External API returned {AssetCount} personal assets.", citizenBGs?.Count ?? 0);
                return citizenBGs ?? new List<CitizenBG>();
            }
 
-           _logger.LogError("External API request failed with status code: {StatusCode}", response.StatusCode);
+           Log.Warning("External API request failed with status code {StatusCode}.", response.StatusCode);
            throw new Exception($"Failed to retrieve data from the API. Status code: {response.StatusCode}");
        }
        catch (Exception ex)
        {
-           _logger.LogError(ex, "External API request failed.");
+           Log.Error(ex, "External API request failed.");
            throw;
        }
    }
