@@ -1,5 +1,9 @@
 # CitizensAPI
 
+< [EN](README.md) | [ES](README.es.md) >
+
+Access the bilingual content by selecting your preferred language above before continuing.
+
 A .NET Web API project that manages citizens through CRUD operations, CSV persistence, external API integration, and Twelve-Factor App practices.
 
 ## Table of Contents
@@ -89,17 +93,17 @@ Configuration + Serilog + Service Registration
 CitizenController
    |
    v
-Business Logic + Validation
+Request Handling + CRUD Flow
    |
    +--> CSVHelper --> CitizenDataStore.csv
    |
    +--> CitizenBGService --> External API
 ```
 
-The application starts in `Program.cs`, where configuration, logging, dependency registration, and middleware are initialized. Incoming HTTP requests are handled by `CitizenController`, which coordinates validation, CRUD operations, CSV persistence through `CSVHelper`, and external object retrieval through `CitizenBGService`.
+The application starts in `Program.cs`, where configuration, logging, dependency registration, and middleware are initialized. Incoming HTTP requests are handled by `CitizenController`, which coordinates request handling, CRUD operations, CSV persistence through `CSVHelper`, and external object retrieval through `CitizenBGService`.
 
 <a id="12-factor-app-explanation"></a>
-## 📚 12 Factor App Explanation
+## 📚 Twelve-Factor App Explanation
 
 <a id="factor-1-codebase"></a>
 ### 1. Codebase
@@ -132,8 +136,6 @@ Main dependencies:
 The practical configuration of the application is described in the [Configuration](#configuration) section below.
 
 From a Twelve-Factor perspective, this project externalizes configuration through `appsettings.json`, `appsettings.Development.json`, and environment variables instead of hardcoding operational values in controllers or services.
-
-This allows the application to adapt across environments without requiring changes to the source code. For example, settings such as the CSV storage path, the external API base URL, and the active environment can be changed through configuration rather than through direct code edits.
 
 <a id="factor-4-backing-services"></a>
 ### 4. Backing Services
@@ -238,7 +240,7 @@ Development and production should remain as similar as possible by:
 
 This reduces unnecessary differences between environments.
 
-It is important to avoid machine-specific noise in the repository and keeping the project portable through configuration and ignored generated files.
+It is important to avoid machine-specific noise in the repository and keep the project portable through configuration and ignored generated files.
 
 <a id="factor-11-logs"></a>
 ### 11. Logs
@@ -297,38 +299,6 @@ The logs provide useful support for maintenance and administration, but they do 
 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
 
-<a id="configuration-summary"></a>
-#### Configuration Summary
-
-Configuration is stored outside the code through:
-
-- `appsettings.json`
-- `appsettings.Development.json`
-- environment variables
-
-Current configuration includes:
-
-- CSV file location
-- external API base URL
-- logging configuration
-
-This configuration can support administrative and maintenance tasks because it centralizes where important operational values are defined.
-
-Example:
-
-```json
-{
-  "Data": {
-    "Location": "CitizenDataStore.csv"
-  },
-  "External Services": {
-    "ObjectsApi": {
-      "BaseUrl": "https://api.restful-api.dev/"
-    }
-  }
-}
-```
-
 <a id="api-endpoints"></a>
 #### API Endpoints
 
@@ -373,7 +343,7 @@ Business rule:
 - The project uses LF line endings through `.gitattributes`.
 - The CSV file is the persistence layer for this practice.
 - The current launch profile uses `https://localhost:9070`.
-- The repository follows the controller-oriented style explained in class instead of the minimal scripting style.
+- The repository follows the controller-oriented style instead of the minimal scripting style.
 
 All these elements can help an administrator understand how the application is configured, executed, and maintained.
 
@@ -530,7 +500,7 @@ Main responsibilities:
 
 - `Controllers` exposes the API endpoints and coordinates CRUD operations
 - `Models` contains the domain entities and request models
-- `Services` handles communication with the external object API
+- `Services` handles communication with the external object API. In the current implementation, the service class is `CitizenBGService`, located in `CitizenService.cs`
 - `Utils` contains helper logic for CSV persistence
 - `Program.cs` configures the application pipeline, services, logging, and Swagger
 
