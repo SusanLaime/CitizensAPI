@@ -4,10 +4,22 @@ A .NET Web API project that manages citizens through CRUD operations, CSV persis
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Project Overview](#project-overview)
 - [How It Works](#how-it-works)
 - [Architecture](#architecture)
 - [Twelve-Factor App Explanation](#12-factor-app-explanation)
+  - [1. Codebase](#factor-1-codebase)
+  - [2. Dependencies](#factor-2-dependencies)
+  - [3. Config](#factor-3-config)
+  - [4. Backing Services](#factor-4-backing-services)
+  - [5. Build, Release, Run](#factor-5-build-release-run)
+  - [6. Processes](#factor-6-processes)
+  - [7. Port Binding](#factor-7-port-binding)
+  - [8. Concurrency](#factor-8-concurrency)
+  - [9. Disposability](#factor-9-disposability)
+  - [10. Dev / Prod Parity](#factor-10-dev-prod-parity)
+  - [11. Logs](#factor-11-logs)
+  - [12. Admin Processes](#factor-12-admin-processes)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
 - [Installation & Setup](#installation--setup)
@@ -16,12 +28,10 @@ A .NET Web API project that manages citizens through CRUD operations, CSV persis
 - [Project Structure](#project-structure)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
-- [Configuration Summary](#configuration-summary)
-- [API Endpoints](#api-endpoints)
-- [Operational Notes](#operational-notes)
 - [Conclusion](#conclusion)
 
-## 📌 Overview
+<a id="project-overview"></a>
+## 📌 Project Overview
 
 CitizensAPI is a .NET Web API application designed to manage citizens in a registry system. It supports CRUD operations, CSV-based persistence, external API integration, structured logging with Serilog, and configuration through `appsettings` files and environment variables.
 
@@ -47,6 +57,7 @@ The application also integrates with `https://api.restful-api.dev/objects` to as
 - **Swagger Support:** Enable interactive API testing in the development environment
 - **Twelve-Factor Alignment:** Document how the project applies Twelve-Factor App principles in practice
 
+<a id="how-it-works"></a>
 ## 🧭 How It Works
 
 ### Controller-Based Structure
@@ -65,6 +76,7 @@ Supporting logic is separated into small parts:
 
 The architectural decisions, configuration flow, execution model, and operational behavior of the application are explained in greater detail in the **Twelve-Factor App Explanation** section below, where each relevant aspect of the project is connected to its corresponding factor.
 
+<a id="architecture"></a>
 ## 🧱 Architecture
 
 ```text
@@ -86,8 +98,10 @@ Business Logic + Validation
 
 The application starts in `Program.cs`, where configuration, logging, dependency registration, and middleware are initialized. Incoming HTTP requests are handled by `CitizenController`, which coordinates validation, CRUD operations, CSV persistence through `CSVHelper`, and external object retrieval through `CitizenBGService`.
 
+<a id="12-factor-app-explanation"></a>
 ## 📚 12 Factor App Explanation
 
+<a id="factor-1-codebase"></a>
 ### 1. Codebase
 
 > One codebase tracked in revision control, many deploys.
@@ -96,6 +110,7 @@ The project is managed in a single Git repository and published on GitHub. Devel
 
 Keeping the project in a single shared codebase with visible history supports traceability and aligns with the codebase factor.
 
+<a id="factor-2-dependencies"></a>
 ### 2. Dependencies
 
 > Explicitly declare and isolate dependencies.
@@ -109,6 +124,7 @@ Main dependencies:
 - `Newtonsoft.Json`
 - `Serilog`
 
+<a id="factor-3-config"></a>
 ### 3. Config
 
 > Store config in the environment.
@@ -119,6 +135,7 @@ From a Twelve-Factor perspective, this project externalizes configuration throug
 
 This allows the application to adapt across environments without requiring changes to the source code. For example, settings such as the CSV storage path, the external API base URL, and the active environment can be changed through configuration rather than through direct code edits.
 
+<a id="factor-4-backing-services"></a>
 ### 4. Backing Services
 
 > Treat backing services as attached resources.
@@ -129,6 +146,7 @@ The project uses the external service:
 
 This service is treated as an attached resource that can be replaced or reconfigured without changing the core business logic.
 
+<a id="factor-5-build-release-run"></a>
 ### 5. Build, Release, Run
 
 > Strictly separate build and run stages.
@@ -142,6 +160,7 @@ The release can be created from the repository state and configuration without c
 
 In this project, build and run are treated as separate, repeatable stages.
 
+<a id="factor-6-processes"></a>
 ### 6. Processes
 
 > Execute the app as one or more stateless processes.
@@ -154,6 +173,7 @@ Citizen data is not permanently stored in the running application. Instead, pers
 
 Each operation reads the current data from the file, applies the requested change, and writes the updated state back to the CSV file. The project also uses `async/await` for external API calls so the application does not block unnecessarily while waiting for responses.
 
+<a id="factor-7-port-binding"></a>
 ### 7. Port Binding
 
 > Export services via port binding.
@@ -180,6 +200,7 @@ Current launch configuration:
 }
 ```
 
+<a id="factor-8-concurrency"></a>
 ### 8. Concurrency
 
 > Scale out via the process model.
@@ -197,12 +218,14 @@ For the future, this factor could be applied more strongly in this project by:
 - running multiple API instances behind a load balancer
 - separating web requests from background worker processes if the system grows
 
+<a id="factor-9-disposability"></a>
 ### 9. Disposability
 
 > Maximize robustness with fast startup and graceful shutdown.
 
 The application starts quickly with `dotnet run` and can stop without requiring complex shutdown steps, for example by pressing `Ctrl + C`. Because persistent data is stored in the CSV file, process restarts do not lose citizen data.
 
+<a id="factor-10-dev-prod-parity"></a>
 ### 10. Dev / Prod Parity
 
 > Keep development, staging, and production as similar as possible.
@@ -217,6 +240,7 @@ This reduces unnecessary differences between environments.
 
 It is important to avoid machine-specific noise in the repository and keeping the project portable through configuration and ignored generated files.
 
+<a id="factor-11-logs"></a>
 ### 11. Logs
 
 > Treat logs as event streams.
@@ -244,6 +268,7 @@ In the current implementation, `Debug` is used for internal flow tracing, such a
 
 This complements the Twelve-Factor idea of logs as event streams because the application is not only writing logs, but also classifying them by severity and purpose. In this way, logs become more useful for debugging, monitoring, maintenance, and understanding the behavior of the system during execution.
 
+<a id="factor-12-admin-processes"></a>
 ### 12. Admin Processes
 
 > Run admin/management tasks as one-off processes.
@@ -272,6 +297,7 @@ The logs provide useful support for maintenance and administration, but they do 
 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
 
+<a id="configuration-summary"></a>
 #### Configuration Summary
 
 Configuration is stored outside the code through:
@@ -303,6 +329,7 @@ Example:
 }
 ```
 
+<a id="api-endpoints"></a>
 #### API Endpoints
 
 ### Create Citizen
@@ -339,6 +366,7 @@ Business rule:
 
 - `DELETE /api/Citizen/{ci}`
 
+<a id="operational-notes"></a>
 #### Operational Notes
 
 - Swagger is enabled in development mode.
@@ -349,6 +377,7 @@ Business rule:
 
 All these elements can help an administrator understand how the application is configured, executed, and maintained.
 
+<a id="tech-stack"></a>
 ## 🧰 Tech Stack
 
 - **Framework:** ASP.NET Core Web API (.NET 10)
@@ -361,6 +390,7 @@ All these elements can help an administrator understand how the application is c
 - **Persistence:** CSV file storage through `CitizenDataStore.csv`
 - **Version Control:** Git and GitHub
 
+<a id="prerequisites"></a>
 ## 📋 Prerequisites
 
 Before running the project, make sure the following tools are available:
@@ -370,6 +400,7 @@ Before running the project, make sure the following tools are available:
 - **Visual Studio** or **Visual Studio Code** with C# support
 - **Internet connection**, because the application consumes `https://api.restful-api.dev/objects`
 
+<a id="installation--setup"></a>
 ## 🧩 Installation & Setup
 
 1. Clone the repository.
@@ -417,6 +448,7 @@ These files define important settings such as:
 - Serilog configuration
 - local development environment values
 
+<a id="configuration"></a>
 ## 🗝️ Configuration
 
 The application uses external configuration files and environment variables to define its runtime behavior.
@@ -437,6 +469,7 @@ These sources control settings such as:
 
 This configuration is loaded in `Program.cs`, allowing the application to keep operational values outside the business logic.
 
+<a id="running-the-application"></a>
 ## ▶️ Running the Application
 
 ### Start the API
@@ -460,6 +493,7 @@ When the environment is set to `Development`, the application also enables:
 - Make sure the CSV file path configured in the app settings is valid
 - Log files are generated automatically through Serilog during execution
 
+<a id="project-structure"></a>
 ## 🗂️ Project Structure
 
 The repository is organized as follows:
@@ -500,6 +534,7 @@ Main responsibilities:
 - `Utils` contains helper logic for CSV persistence
 - `Program.cs` configures the application pipeline, services, logging, and Swagger
 
+<a id="development"></a>
 ## 💻 Development
 
 ### Development Workflow
@@ -573,6 +608,7 @@ This command creates an optimized publish output for deployment. The `-c Release
 
 Running `dotnet publish -c Release` does not change the normal development workflow. After publishing, the project can still be built and executed locally with `dotnet build` and `dotnet run` as usual.
 
+<a id="troubleshooting"></a>
 ## 🛠️ Troubleshooting
 
 ### Build Issues
@@ -660,6 +696,7 @@ dotnet run
 dotnet publish -c Release
 ```
 
+<a id="conclusion"></a>
 ## 📝 Conclusion
 
 This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors, such as concurrency and admin processes, are only partially implemented, the repository clearly documents both what is already working and what could be improved in a future development.
