@@ -1,12 +1,31 @@
 # CitizensAPI
 
-A project developed using a .NET Web API that manages citizens using CRUD operations, CSV persistence, external API integration, and 12 Factor App principles.
+A .NET Web API project that manages citizens through CRUD operations, CSV persistence, external API integration, and Twelve-Factor App practices.
 
-## Project Overview
+## Table of Contents
 
-This API manages citizens in a registry system.
+- [Overview](#overview)
+- [How It Works](#how-it-works)
+- [Architecture](#architecture)
+- [Twelve-Factor App Explanation](#12-factor-app-explanation)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Configuration Summary](#configuration-summary)
+- [API Endpoints](#api-endpoints)
+- [Operational Notes](#operational-notes)
+- [Conclusion](#conclusion)
 
-Each citizen contains:
+## 📌 Overview
+
+CitizensAPI is a .NET Web API application designed to manage citizens in a registry system. It supports CRUD operations, CSV-based persistence, external API integration, structured logging with Serilog, and configuration through `appsettings` files and environment variables.
+
+Each citizen record includes:
 
 - `FirstName`
 - `LastName`
@@ -14,44 +33,74 @@ Each citizen contains:
 - `BloodGroup`
 - `PersonalAsset`
 
-The application supports:
+The application also integrates with `https://api.restful-api.dev/objects` to assign a random personal asset when a new citizen is created.
 
-- Create citizen
-- Get all citizens
-- Get citizen by CI
-- Update citizen
-- Delete citizen
+### Key Features
 
-It also integrates with the external API:
+- **CRUD Operations:** Create, retrieve, update, and delete citizens
+- **CSV Persistence:** Store citizen records in `CitizenDataStore.csv`
+- **External API Integration:** Retrieve random objects to assign personal assets
+- **Random Blood Group Assignment:** Automatically assign a valid blood group during citizen creation
+- **Controller-Based Architecture:** Organize endpoints using ASP.NET Core controllers
+- **Environment-Based Configuration:** Load settings from `appsettings.json`, `appsettings.Development.json`, and environment variables
+- **Serilog Logging:** Record application events to the console and log files
+- **Swagger Support:** Enable interactive API testing in the development environment
+- **Twelve-Factor Alignment:** Document how the project applies Twelve-Factor App principles in practice
 
-- `https://api.restful-api.dev/objects`
-
-This external API is used to assign a random `PersonalAsset` when creating a citizen.
-
-## Architecture Notes
+## 🧭 How It Works
 
 ### Controller-Based Structure
 
-The project uses a controller-based architecture instead of the minimal API scripting style.
+The project uses a controller-based architecture instead of the minimal API scripting style. This approach keeps the API clearer, easier to maintain, and easier to extend as the project grows.
 
-This helps organize the API in a more scalable and maintainable way for larger or more structured projects.
+The application starts in `Program.cs`, where it loads configuration, configures Serilog, registers services, and enables Swagger in the development environment.
 
-## 12 Factor App Explanation
+Client requests are handled by `CitizenController`, which exposes the CRUD endpoints for citizens. The controller reads and updates citizen data stored in `CitizenDataStore.csv`, while `CitizenBGService` connects to the external API to retrieve random objects used as personal assets.
+
+Supporting logic is separated into small parts:
+
+- `Models` define the request and domain objects
+- `Services` handle external integration
+- `Utils` contains helper logic for CSV read and write operations
+
+The architectural decisions, configuration flow, execution model, and operational behavior of the application are explained in greater detail in the **Twelve-Factor App Explanation** section below, where each relevant aspect of the project is connected to its corresponding factor.
+
+## 🧱 Architecture
+
+```text
+Program.cs
+   |
+   v
+Configuration + Serilog + Service Registration
+   |
+   v
+CitizenController
+   |
+   v
+Business Logic + Validation
+   |
+   +--> CSVHelper --> CitizenDataStore.csv
+   |
+   +--> CitizenBGService --> External API
+```
+
+The application starts in `Program.cs`, where configuration, logging, dependency registration, and middleware are initialized. Incoming HTTP requests are handled by `CitizenController`, which coordinates validation, CRUD operations, CSV persistence through `CSVHelper`, and external object retrieval through `CitizenBGService`.
+
+## 📚 12 Factor App Explanation
 
 ### 1. Codebase
 
 > One codebase tracked in revision control, many deploys.
 
-The project is managed in a single Git repository and published in GitHub.
-Development was done through Git commits on the practice branch `P2-001`.
+The project is managed in a single Git repository and published on GitHub. Development was carried out through Git commits on the practice branch `P2-001`.
 
-Keeping the project in a single public codebase in the cloud and pushing progress frequently is a good and professional practice so that development history remains visible.
+Keeping the project in a single shared codebase with visible history supports traceability and aligns with the codebase factor.
 
 ### 2. Dependencies
 
 > Explicitly declare and isolate dependencies.
 
-Dependencies are explicitly declared in the manifesto file `CitizensAPI.csproj`.
+Dependencies are explicitly declared in the project file `CitizensAPI.csproj`.
 
 Main dependencies:
 
@@ -64,22 +113,11 @@ Main dependencies:
 
 > Store config in the environment.
 
-Configuration is externalized from code.
+The practical configuration of the application is described in the [Configuration](#configuration) section below.
 
-Instead of hardcoding values directly in the controller or services, the application reads:
+From a Twelve-Factor perspective, this project externalizes configuration through `appsettings.json`, `appsettings.Development.json`, and environment variables instead of hardcoding operational values in controllers or services.
 
-- file storage path
-- external API base URL
-- logging configuration
-
-from the configuration files and environment variables.
-
-In this project, the application first loads configuration from `appsettings.json` and `appsettings.Development.json`. After that, it also loads environment variables in `Program.cs` using `.AddEnvironmentVariables()`. This means environment variables can override values defined in the configuration files.
-
-A simple example is `ASPNETCORE_ENVIRONMENT`, defined in `launchSettings.json`. It tells the application that it is running in the `Development` environment. Because of that, the app loads development-specific settings and enables development features such as Swagger.
-
-This relates to the config section because environment variables are another way to provide configuration from outside the code. They allow the behavior of the application to change without modifying controllers or services. For example, values such as `Data:Location` and `External Services:ObjectsApi:BaseUrl` can be stored in configuration files during development, but replaced with environment variables in testing or production.
-
+This allows the application to adapt across environments without requiring changes to the source code. For example, settings such as the CSV storage path, the external API base URL, and the active environment can be changed through configuration rather than through direct code edits.
 
 ### 4. Backing Services
 
@@ -89,20 +127,20 @@ The project uses the external service:
 
 - `https://api.restful-api.dev/objects`
 
-This service is treated as an attached resource that can be replaced or reconfigured without changing core business logic.
+This service is treated as an attached resource that can be replaced or reconfigured without changing the core business logic.
 
 ### 5. Build, Release, Run
 
 > Strictly separate build and run stages.
 
-The application separates:
+The application separates the following stages:
 
 - build: `dotnet build`
 - run: `dotnet run`
 
-The release can be created from the repository state and configuration without changing code.
+The release can be created from the repository state and configuration without changing the source code.
 
-In this project, build and run are executed as separate stages and can be repeated consistently.
+In this project, build and run are treated as separate, repeatable stages.
 
 ### 6. Processes
 
@@ -120,8 +158,7 @@ Each operation reads the current data from the file, applies the requested chang
 
 > Export services via port binding.
 
-The application exposes itself through the ASP.NET Core web server.
-It can be accessed through the configured local port when running with `dotnet run` or launch settings.
+The application exposes itself through the ASP.NET Core web server and can be accessed through the configured local port when running with `dotnet run` or the launch settings profile.
 
 In the current repository, the configured local endpoint is:
 
@@ -149,12 +186,9 @@ Current launch configuration:
 
 This factor is not fully implemented in the current project.
 
-In this project, the application is designed in a mostly stateless way at the API level, but its persistence layer is a single CSV file.
-The project includes in-process locking for file access, which helps avoid corruption inside a single running instance. However, because the application rewrites the CSV file during create, update, and delete operations, it still does not provide full coordination for multiple processes or multiple deployed instances.
+In this project, the application is designed in a mostly stateless way at the API level, but its persistence layer is a single CSV file. The project includes in-process locking for file access, which helps avoid corruption inside a single running instance. However, because the application rewrites the CSV file during create, update, and delete operations, it still does not provide full coordination for multiple processes or multiple deployed instances.
 
-For that reason, the project is not prepared for real concurrent scaling across multiple processes or instances.
-The use of `async/await` improves the handling of external API calls by avoiding unnecessary blocking, but it does not by itself guarantee safe concurrency or horizontal scalability.
-In this project, concurrency is addressed only conceptually.
+For that reason, the project is not prepared for real concurrent scaling across multiple processes or instances. The use of `async/await` improves the handling of external API calls by avoiding unnecessary blocking, but it does not by itself guarantee safe concurrency or horizontal scalability. In this project, concurrency is addressed only conceptually.
 
 For the future, this factor could be applied more strongly in this project by:
 
@@ -163,13 +197,11 @@ For the future, this factor could be applied more strongly in this project by:
 - running multiple API instances behind a load balancer
 - separating web requests from background worker processes if the system grows
 
-
 ### 9. Disposability
 
 > Maximize robustness with fast startup and graceful shutdown.
 
-The application starts quickly with `dotnet run` and can stop without requiring complex shutdown steps, for example by pressing `Ctrl + C`.
-Because persistent data is stored in the CSV file, process restarts do not lose citizen data.
+The application starts quickly with `dotnet run` and can stop without requiring complex shutdown steps, for example by pressing `Ctrl + C`. Because persistent data is stored in the CSV file, process restarts do not lose citizen data.
 
 ### 10. Dev / Prod Parity
 
@@ -181,9 +213,9 @@ Development and production should remain as similar as possible by:
 - using the same dependency definitions
 - using configuration files and environment variables for environment-specific values
 
-This reduces differences between environments.
+This reduces unnecessary differences between environments.
 
-The class also emphasized avoiding machine-specific noise in the repository and keeping the project portable through configuration and ignored generated files.
+It is important to avoid machine-specific noise in the repository and keeping the project portable through configuration and ignored generated files.
 
 ### 11. Logs
 
@@ -225,7 +257,7 @@ In this project, the repository does not include a dedicated script or command f
 - seeding initial records
 - migrating the file structure
 
-However, the project already includes support elements that can help future maintenance and administration tasks.
+However, the project already includes supporting elements that can help future maintenance and administration tasks.
 
 For example, the current logging implementation helps with:
 
@@ -236,11 +268,9 @@ For example, the current logging implementation helps with:
 
 Because of that, this factor is addressed only partially and conceptually in this practice.
 
-The logs provide useful support for maintenance and administration, but they do not replace a real admin process.
-In this project, a real admin task would be a separate one-time script or command for things like cleaning `CitizenDataStore.csv`, preloading sample citizens, repairing malformed rows, or migrating the CSV structure if the model changes.
+The logs provide useful support for maintenance and administration, but they do not replace a real admin process. In this project, a real admin task would be a separate one-time script or command for activities such as cleaning `CitizenDataStore.csv`, preloading sample citizens, repairing malformed rows, or migrating the CSV structure if the model changes.
 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
-
 
 #### Configuration Summary
 
@@ -319,6 +349,317 @@ Business rule:
 
 All these elements can help an administrator understand how the application is configured, executed, and maintained.
 
-## Conclusion
+## 🧰 Tech Stack
 
-This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors such as concurrency and admin processes are only partially implemented, the repository documents both what is already working and what could be improved in a future iteration.
+- **Framework:** ASP.NET Core Web API (.NET 10)
+- **Language:** C#
+- **API Documentation:** Swagger / Swashbuckle
+- **Logging:** Serilog
+- **External HTTP Integration:** `HttpClient`
+- **JSON Handling:** Newtonsoft.Json
+- **Configuration:** `appsettings.json`, `appsettings.Development.json`, and environment variables
+- **Persistence:** CSV file storage through `CitizenDataStore.csv`
+- **Version Control:** Git and GitHub
+
+## 📋 Prerequisites
+
+Before running the project, make sure the following tools are available:
+
+- **.NET SDK 10.0**
+- **Git**, if you want to clone the repository and manage versions locally
+- **Visual Studio** or **Visual Studio Code** with C# support
+- **Internet connection**, because the application consumes `https://api.restful-api.dev/objects`
+
+## 🧩 Installation & Setup
+
+1. Clone the repository.
+2. Open the project in your editor or IDE.
+3. Restore and build the project.
+4. Review the configuration files.
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd CitizensAPI
+```
+
+### Step 2: Open the Project
+
+Open the solution in Visual Studio or open the project folder in Visual Studio Code.
+
+### Step 3: Restore and Build the Project
+
+Restore dependencies using:
+
+```bash
+dotnet restore
+```
+
+Build the application using:
+
+```bash
+dotnet build
+```
+
+### Step 4: Review Configuration
+
+The application reads configuration from:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- `Properties/launchSettings.json`
+
+These files define important settings such as:
+
+- CSV storage location
+- external API base URL
+- Serilog configuration
+- local development environment values
+
+## 🗝️ Configuration
+
+The application uses external configuration files and environment variables to define its runtime behavior.
+
+The main configuration sources are:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- `Properties/launchSettings.json`
+- environment variables
+
+These sources control settings such as:
+
+- CSV storage location
+- external API base URL
+- Serilog log levels and outputs
+- environment selection through `ASPNETCORE_ENVIRONMENT`
+
+This configuration is loaded in `Program.cs`, allowing the application to keep operational values outside the business logic.
+
+## ▶️ Running the Application
+
+### Start the API
+
+Use the following command to start the API locally:
+
+```bash
+dotnet run
+```
+
+### Development Features
+
+When the environment is set to `Development`, the application also enables:
+
+- Swagger UI for endpoint testing
+- development-specific configuration from `appsettings.Development.json`
+
+### Notes
+
+- Make sure the external API `https://api.restful-api.dev/objects` is reachable
+- Make sure the CSV file path configured in the app settings is valid
+- Log files are generated automatically through Serilog during execution
+
+## 🗂️ Project Structure
+
+The repository is organized as follows:
+
+```text
+CitizensAPI/
+├── Controllers/
+│   └── CitizenController.cs
+├── Models/
+│   ├── BloodGroups.cs
+│   ├── Citizen.cs
+│   ├── CitizenBG.cs
+│   ├── CreateCitizenRequest.cs
+│   ├── Response.cs
+│   └── UpdateCitizenRequest.cs
+├── Properties/
+│   └── launchSettings.json
+├── Services/
+│   └── CitizenService.cs
+├── Utils/
+│   └── CSVHelper.cs
+├── appsettings.Development.json
+├── appsettings.json
+├── CitizenDataStore.csv
+├── CitizensAPI.csproj
+├── CitizensAPI.sln
+├── Program.cs
+└── README.md
+```
+
+Generated runtime artifacts such as `Logs/`, `bin/`, and `obj/` are not part of the core source structure and are therefore omitted from this overview.
+
+Main responsibilities:
+
+- `Controllers` exposes the API endpoints and coordinates CRUD operations
+- `Models` contains the domain entities and request models
+- `Services` handles communication with the external object API
+- `Utils` contains helper logic for CSV persistence
+- `Program.cs` configures the application pipeline, services, logging, and Swagger
+
+## 💻 Development
+
+### Development Workflow
+
+1. **Open the Project**
+   - Open the project in Visual Studio or Visual Studio Code
+
+2. **Make Changes**
+   - Modify controllers, services, models, configuration files, or utilities depending on the feature being implemented
+
+3. **Build the Project**
+   - Run `dotnet build` to verify that the code compiles correctly
+
+4. **Run the Application**
+   - Run `dotnet run` to validate the behavior locally
+
+5. **Verify the Changes**
+   - Test endpoints with Swagger
+   - Review logs generated by Serilog
+   - Confirm that CSV persistence behaves correctly
+
+### Code Style
+
+- **Language:** C#
+- **Architecture Style:** Controller-based ASP.NET Core Web API
+- **Formatting:** Consistent C# formatting through the IDE or editor tooling
+- **Naming Conventions:**
+  - **Classes and files:** PascalCase, for example `CitizenController.cs`
+  - **Methods and properties:** PascalCase, for example `GetCitizenBGs`
+  - **Private fields:** `_camelCase`, for example `_httpClient`
+  - **Local variables and parameters:** camelCase, for example `citizenRequest`
+
+### Key Development Patterns
+
+1. **Controllers**
+   - Handle HTTP requests and coordinate the application flow
+
+2. **Services**
+   - Encapsulate external API communication and supporting logic
+
+3. **Models**
+   - Represent request bodies and domain entities
+
+4. **Utilities**
+   - Centralize reusable helper logic such as CSV file operations
+
+5. **Configuration**
+   - Keep runtime settings outside the business logic through app settings files and environment variables
+
+6. **Logging**
+   - Use Serilog to record development and runtime events with appropriate log levels
+
+### Validation During Development
+
+The project is currently validated through:
+
+- `dotnet build` to verify successful compilation
+- `dotnet run` to execute the API locally
+- Swagger to test the endpoints interactively
+- Serilog outputs to review runtime behavior and errors
+
+### Build for Production
+
+A production-ready build or deployable version of the application can be generated with:
+
+```bash
+dotnet publish -c Release
+```
+
+This command creates an optimized publish output for deployment. The `-c Release` option tells .NET to use the **Release** configuration instead of the default development-oriented configuration.
+
+Running `dotnet publish -c Release` does not change the normal development workflow. After publishing, the project can still be built and executed locally with `dotnet build` and `dotnet run` as usual.
+
+## 🛠️ Troubleshooting
+
+### Build Issues
+
+If the project does not build correctly, run:
+
+```bash
+dotnet restore
+dotnet build
+```
+
+Make sure that:
+
+- the .NET SDK 10.0 is installed correctly
+- all NuGet dependencies are restored
+- the project file `CitizensAPI.csproj` is valid
+- there are no syntax errors in recently modified files
+
+### Run Issues
+
+If the application does not start correctly, run:
+
+```bash
+dotnet run
+```
+
+Verify that:
+
+- the project builds successfully first
+- the configured port is not already in use
+- the values in `launchSettings.json` are valid
+- the environment configuration is correct
+
+### Configuration Issues
+
+If the application cannot find files or services, verify the following configuration sources:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- `Properties/launchSettings.json`
+
+Pay special attention to:
+
+- `Data:Location`
+- `External Services:ObjectsApi:BaseUrl`
+- `ASPNETCORE_ENVIRONMENT`
+
+Incorrect values in these settings may prevent the application from reading the CSV file or connecting to the external API.
+
+### External API Issues
+
+If personal assets are not being assigned correctly:
+
+- verify that `https://api.restful-api.dev/objects` is reachable
+- verify that the configured base URL is correct
+- review warning and error logs generated by Serilog
+- confirm that the external API is returning valid data
+
+### CSV Persistence Issues
+
+If citizen data is not being stored or updated correctly:
+
+- verify that the configured CSV path exists
+- verify that the application has permission to read and write the file
+- confirm that the CSV file format is valid
+- review logs for file read or write errors
+
+### Logging Issues
+
+If logs are not appearing as expected, verify:
+
+- Serilog configuration in `appsettings.json`
+- Serilog configuration in `appsettings.Development.json`
+- the configured `MinimumLevel`
+- the existence of the output log path
+
+Also confirm that the application is running in the expected environment so the correct configuration file is loaded.
+
+### Common Validation Commands
+
+```bash
+dotnet restore
+dotnet build
+dotnet run
+dotnet publish -c Release
+```
+
+## 📝 Conclusion
+
+This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors, such as concurrency and admin processes, are only partially implemented, the repository clearly documents both what is already working and what could be improved in a future development.
