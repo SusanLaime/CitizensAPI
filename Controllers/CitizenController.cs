@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 [ApiController]
 [Route("api/[controller]")]
 public class CitizenController : ControllerBase
@@ -78,6 +79,9 @@ public class CitizenController : ControllerBase
             _citizensList.Add(citizentoAdd);
             List<string[]> data = new List<string[]>();
 
+            Log.Debug("Preparing to write citizen data to CSV. Total citizens: {CitizenCount}", _citizensList.Count);
+            Log.Information("Citizen created with CI: {CitizenCI}", citizentoAdd.CI);
+
             for (int i = 0; i < _citizensList.Count; i++)
             { 
                 string[] citizenData = new string[]
@@ -118,10 +122,12 @@ public class CitizenController : ControllerBase
         if (foundCitizen == null)
         {
             //Instead of Not FOund because it is too generic
+            Log.Debug("Citizen with CI: {CitizenCI} not found.", id);
             return Ok("Citizen not found with CI: " + id);
         }
         else
         {
+            Log.Information("Citizen with CI: {CitizenCI} found.", foundCitizen.CI);
             return Ok(foundCitizen);
         }
 
