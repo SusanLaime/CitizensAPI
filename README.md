@@ -102,24 +102,19 @@ The application separates:
 
 The release can be created from the repository state and configuration without changing code.
 
-In this projecxt, build and run was done repeatable times and clearly documented.
+In this project, build and run are executed as separate stages and can be repeated consistently.
 
 ### 6. Processes
 
 > Execute the app as one or more stateless processes.
 
-The API behaves as a stateless process.
+The API is designed to behave as a stateless web process.
 
-Processes are not rally used.
-ASYNC and await are used.
-
-We were supposed to use threads.
-Citizen data is not permanently stored in memory.
-Instead, persistent data is stored in the CSV file:
+Citizen data is not permanently stored in the running application. Instead, persistent data is stored in the CSV file:
 
 - `CitizenDataStore.csv`
 
-Each request loads the data from file, applies changes, and writes the updated state back to the CSV file.
+Each operation reads the current data from the file, applies the requested change, and writes the updated state back to the CSV file. The project also uses `async/await` for external API calls so the application does not block unnecessarily while waiting for responses.
 
 ### 7. Port Binding
 
@@ -155,7 +150,7 @@ Current launch configuration:
 This factor is not fully implemented in the current project.
 
 In this project, the application is designed in a mostly stateless way at the API level, but its persistence layer is a single CSV file.
-Because the application rewrites the CSV file during create, update, and delete operations, there is no explicit mechanism for coordinating simultaneous write operations.
+The project includes in-process locking for file access, which helps avoid corruption inside a single running instance. However, because the application rewrites the CSV file during create, update, and delete operations, it still does not provide full coordination for multiple processes or multiple deployed instances.
 
 For that reason, the project is not prepared for real concurrent scaling across multiple processes or instances.
 The use of `async/await` improves the handling of external API calls by avoiding unnecessary blocking, but it does not by itself guarantee safe concurrency or horizontal scalability.
@@ -173,7 +168,7 @@ For the future, this factor could be applied more strongly in this project by:
 
 > Maximize robustness with fast startup and graceful shutdown.
 
-The application starts quickly with `dotnet run` and can stop without requiring complex shutdown steps (just typing Crtl + C).
+The application starts quickly with `dotnet run` and can stop without requiring complex shutdown steps, for example by pressing `Ctrl + C`.
 Because persistent data is stored in the CSV file, process restarts do not lose citizen data.
 
 ### 10. Dev / Prod Parity
@@ -224,6 +219,7 @@ This complements the Twelve-Factor idea of logs as event streams because the app
 This factor is not fully implemented as a separate one-off administrative process in the current project.
 
 In this project, the repository does not include a dedicated script or command for administrative tasks such as:
+
 - cleaning the CSV file
 - resetting stored citizen data
 - seeding initial records
@@ -232,6 +228,7 @@ In this project, the repository does not include a dedicated script or command f
 However, the project already includes support elements that can help future maintenance and administration tasks.
 
 For example, the current logging implementation helps with:
+
 - reviewing citizen creation, update, and deletion events
 - detecting external API failures
 - identifying file read or write problems
@@ -244,33 +241,8 @@ In this project, a real admin task would be a separate one-time script or comman
 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
 
-Additionally, it will be redacted the configuration of this project.
-#### Configuration of the app
-## Build, Release, Run
 
-### Build
-
-```bash
-dotnet build
-```
-
-### Run
-
-```bash
-dotnet run
-```
-
-### Launch Settings and Port
-
-The current repository is configured to run on port `9070`.
-
-### Swagger
-
-When the application runs in development mode, Swagger UI is enabled and can be used to test the endpoints from the browser.
-
-Swagger is enabled only in development mode, knowing that Swagger is useful for development and testing, but should not be unnecessarily exposed in production.
-
-## Configuration
+#### Configuration Summary
 
 Configuration is stored outside the code through:
 
@@ -281,15 +253,17 @@ Configuration is stored outside the code through:
 Current configuration includes:
 
 - CSV file location
-- external API base URL and URI
+- external API base URL
 - logging configuration
+
+This configuration can support administrative and maintenance tasks because it centralizes where important operational values are defined.
 
 Example:
 
 ```json
 {
   "Data": {
-    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
+    "Location": "CitizenDataStore.csv"
   },
   "External Services": {
     "ObjectsApi": {
@@ -299,16 +273,7 @@ Example:
 }
 ```
 
-The configuration loading is explicit in `Program.cs`:
-
-- `appsettings.json`
-- `appsettings.Development.json`
-- environment variables
-
-instead of hardcoding those values in the application logic.
-
-
-## API Endpoints
+#### API Endpoints
 
 ### Create Citizen
 
@@ -344,7 +309,7 @@ Business rule:
 
 - `DELETE /api/Citizen/{ci}`
 
-## Notes
+#### Operational Notes
 
 - Swagger is enabled in development mode.
 - The project uses LF line endings through `.gitattributes`.
@@ -352,4 +317,8 @@ Business rule:
 - The current launch profile uses `https://localhost:9070`.
 - The repository follows the controller-oriented style explained in class instead of the minimal scripting style.
 
-All these configurations can be managed by the administrator.
+All these elements can help an administrator understand how the application is configured, executed, and maintained.
+
+## Conclusion
+
+This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors such as concurrency and admin processes are only partially implemented, the repository documents both what is already working and what could be improved in a future iteration.
