@@ -95,6 +95,13 @@ La logica de soporte esta separada en partes pequenas:
 
 La seccion [Explicacion de Twelve-Factor App](#12-factor-app-explanation) conecta estas decisiones tecnicas con los factores que mas se notan en este proyecto, como configuracion, logs y backing services.
 
+### Manejo de Errores, Uso de `try-catch` y Validaciones
+
+En este proyecto, el manejo de errores esta organizado por niveles. Primero, las situaciones esperadas se revisan con condicionales `if`, como CI duplicados, ciudadanos no encontrados o respuestas no exitosas de la API. Estos casos forman parte del flujo normal de la aplicacion y no siempre requieren excepciones.
+
+En un nivel mas alto, `try-catch` se usa en operaciones mas expuestas a fallos en tiempo de ejecucion, como el manejo del archivo CSV y la comunicacion con la API externa. Esto permite registrar errores con Serilog y devolver respuestas controladas cuando ocurre algo inesperado.
+
+
 <a id="architecture"></a>
 ## 🧱 Arquitectura: Controller-Based ASP.NET Core Web API
 

@@ -99,6 +99,15 @@ Supporting logic is separated into small parts:
 
 The [Twelve-Factor App Explanation](#12-factor-app-explanation) section below connects these technical decisions with the factors that are most visible in this project, such as configuration, logs, and backing services.
 
+
+### Error Handling, Use of `try-catch` and Validations
+
+In this project, error handling is organized in levels. First, expected situations are checked with `if` conditionals, such as duplicated CI values, missing citizens, or unsuccessful API responses. These are part of the normal application flow and do not always require exceptions.
+
+At a higher level, `try-catch` is used in operations that are more exposed to runtime failures, such as CSV file handling and external API communication. This allows the application to log errors with Serilog and return controlled responses when something unexpected happens.
+
+
+
 <a id="architecture"></a>
 ## 🧱 Architecture: Controller-Based ASP.NET Core Web API
 
