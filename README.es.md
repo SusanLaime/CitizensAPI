@@ -4,19 +4,22 @@
 
 Accede al contenido bilingue seleccionando tu idioma preferido arriba antes de continuar.
 
-API de registro ciudadano construida con ASP.NET Core, persistencia en CSV, integracion con API externa e ideas practicas de Twelve-Factor App.
+API de registro ciudadano construida con ASP.NET Core, persistencia en CSV, integracion con API externa y practicas de Twelve-Factor App.
 
-| Campo | Descripcion |
+> API web academica para `Certificacion I`, enfocada en operaciones CRUD, configuracion externa y una estructura de proyecto limpia.
+> Estado: proyecto academico, funcional para el curso, no listo para produccion.
+
+| Aspecto | Valor |
 | --- | --- |
 | Estilo de API | ASP.NET Core Web API basada en controllers |
 | Persistencia | `CitizenDataStore.csv` |
 | Servicio externo | `https://api.restful-api.dev/objects` |
-| Estado | Proyecto academico, funcional para el curso, no listo para produccion. |
 
 ## Tabla de Contenidos
 
-- [👤 Contexto de la Autora y Desarrollo del Proyecto](#author-background)
+- [👤 Informacion de la Autora](#author-information)
 - [📌 Descripcion General](#project-overview)
+- [🚀 Inicio Rapido](#quick-start)
 - [🧭 Como Funciona](#how-it-works)
 - [🧱 Arquitectura](#architecture)
 - [📚 Explicacion de Twelve-Factor App](#12-factor-app-explanation)
@@ -36,26 +39,26 @@ API de registro ciudadano construida con ASP.NET Core, persistencia en CSV, inte
 - [🧰 Stack Tecnologico](#tech-stack)
 - [📋 Prerrequisitos](#prerequisites)
 - [🧩 Instalacion y Configuracion](#installation--setup)
+- [🗝️ Configuracion](#configuration)
 - [▶️ Ejecucion de la Aplicacion](#running-the-application)
 - [🗂️ Estructura del Proyecto](#project-structure)
 - [💻 Desarrollo](#development)
 - [🛠️ Solucion de Problemas](#troubleshooting)
 - [🔒 Notas Criticas de Seguridad](#critical-security-notes)
 - [🛡️ Mejoras de Seguridad](#security-improvements)
-- [📝 Conclusion](#conclusion)
 - [📚 Referencias](#references)
+- [📞 Contacto y Soporte](#contact-and-support)
+- [📝 Conclusion](#conclusion)
 
-<a id="author-background"></a>
-## 👤 Contexto de la Autora y Desarrollo del Proyecto
+<a id="author-information"></a>
+## 👤 Informacion de la Autora
 
-`CitizensAPI` es un proyecto academico de ASP.NET Core Web API desarrollado por `Susan Laime Lucero` para la materia `Certificacion I` en la Universidad Privada Boliviana (UPB). El proyecto se mantiene en el repositorio `https://github.com/SusanLaime/CitizensAPI` e incluye ASP.NET Core, Serilog, Swagger y persistencia basada en CSV. Tambien esta documentado en ingles y en espanol mediante `README.md` y `README.es.md`. Si tienes preguntas sobre el proyecto o su implementacion, puedes contactarme en `susanlaimel1@upb.edu`. Este proyecto se comparte bajo la `MIT License` y actualmente se presenta como un proyecto academico en estado activo de trabajo. <br>
-
-Ultima actualizacion: `March 19, 2026`.
+`CitizensAPI` es un proyecto academico de ASP.NET Core Web API desarrollado por `Susan Laime Lucero` para `Certificacion I`, `Segundo Parcial`, con fecha `March 18, 2026`. El proyecto se mantiene en el repositorio `SusanLaime/CitizensAPI`, utiliza ASP.NET Core con Serilog, Swagger y persistencia en CSV, y esta documentado tanto en ingles como en espanol mediante `README.md` y `README.es.md`.
 
 <a id="project-overview"></a>
 ## 📌 Descripcion General
 
-CitizensAPI es una aplicacion Web API en .NET creada para gestionar ciudadanos dentro de un sistema de registro. Soporta operaciones CRUD, persistencia basada en CSV, integracion con una API externa, logging estructurado con Serilog y configuracion mediante archivos `appsettings` y variables de entorno.
+CitizensAPI es una API Web en .NET disenada para administrar ciudadanos dentro de un sistema de registro. Soporta operaciones CRUD, persistencia basada en CSV, integracion con una API externa, logging estructurado con Serilog y configuracion mediante archivos `appsettings` y variables de entorno.
 
 Cada registro de ciudadano incluye `FirstName`, `LastName`, `CI`, `BloodGroup` y `PersonalAsset`. La API tambien se integra con `https://api.restful-api.dev/objects` para asignar un activo personal aleatorio cuando se crea un nuevo ciudadano.
 
@@ -63,25 +66,47 @@ Cada registro de ciudadano incluye `FirstName`, `LastName`, `CI`, `BloodGroup` y
 
 | Caracteristica | Descripcion |
 | --- | --- |
-| Operaciones CRUD | Crear, consultar, actualizar y eliminar ciudadanos |
-| Persistencia en CSV | Almacenar registros de ciudadanos en `CitizenDataStore.csv` |
-| Integracion con API externa | Obtener objetos aleatorios para asignar activos personales |
-| Asignacion aleatoria de grupo sanguineo | Asignar automaticamente un grupo sanguineo valido al crear un ciudadano |
-| Arquitectura basada en controllers | Organizar endpoints usando controllers de ASP.NET Core |
-| Configuracion por entorno | Cargar ajustes desde `appsettings.json`, `appsettings.Development.json` y variables de entorno |
-| Logging con Serilog | Registrar eventos de la aplicacion en consola y archivos |
-| Soporte con Swagger | Habilitar pruebas interactivas de la API en el entorno de desarrollo |
-| Alineacion con Twelve-Factor | Documentar como el proyecto aplica los principios Twelve-Factor en la practica |
+| Operaciones CRUD | Crea, consulta, actualiza y elimina ciudadanos |
+| Persistencia en CSV | Almacena los registros de ciudadanos en `CitizenDataStore.csv` |
+| Integracion con API externa | Obtiene objetos aleatorios para asignar activos personales |
+| Asignacion aleatoria de grupo sanguineo | Asigna automaticamente un grupo sanguineo valido al crear un ciudadano |
+| Arquitectura basada en controllers | Organiza los endpoints usando controllers de ASP.NET Core |
+| Configuracion por entorno | Carga ajustes desde `appsettings.json`, `appsettings.Development.json` y variables de entorno |
+| Logging con Serilog | Registra eventos de la aplicacion en consola y archivos |
+| Soporte con Swagger | Habilita pruebas interactivas de la API en desarrollo |
+| Alineacion con Twelve-Factor | Documenta como el proyecto aplica los principios Twelve-Factor en la practica |
+
+<a id="quick-start"></a>
+## 🚀 Inicio Rapido
+
+Antes de comenzar, asegurate de tener instalado el SDK de .NET 10 y una conexion a internet disponible para restaurar las dependencias desde NuGet y alcanzar la API externa.
+
+> Importante: `dotnet restore` descarga las dependencias del proyecto y `dotnet build` verifica que la API compile antes de ejecutarla.
+
+Si solo quieres ejecutar la API rapidamente, usa este flujo unico:
+
+```bash
+git clone https://github.com/SusanLaime/CitizensAPI.git
+cd CitizensAPI
+dotnet restore
+dotnet build
+dotnet run
+```
+
+Luego abre:
+
+- Swagger UI: `https://localhost:9070/swagger`
+- Documento OpenAPI: `https://localhost:9070/openapi/v1.json`
+- Ruta base de ciudadanos: `https://localhost:9070/api/Citizen`
+
+En la implementacion actual, Swagger usa la version de documento `v1` y la etiqueta de UI `My API V1`.
 
 <a id="how-it-works"></a>
 ## 🧭 Como Funciona
 
-| La logica principal de este proyecto incluye validar ciudadanos duplicados, asignar un grupo sanguineo aleatorio, obtener un activo personal desde la API externa y persistir el registro final en el archivo CSV. |
-| --- |
-
 ### Estructura Basada en Controllers
 
-Este proyecto usa una arquitectura basada en controllers en lugar del estilo de minimal API. Para esta practica, eso hace que la API sea mas facil de leer, mantener y extender.
+El proyecto utiliza una arquitectura basada en controllers en lugar del estilo de minimal API. Este enfoque hace que la API sea mas clara, mas facil de mantener y mas facil de extender a medida que el proyecto crece.
 
 La aplicacion inicia en `Program.cs`, donde carga la configuracion, configura Serilog, registra servicios y habilita Swagger en el entorno de desarrollo.
 
@@ -89,21 +114,41 @@ Las solicitudes del cliente son manejadas por `CitizenController`, que expone lo
 
 La logica de soporte esta separada en partes pequenas:
 
-- `Models` define los objetos de solicitud y de dominio
+- `Models` define los objetos de dominio y de solicitud
 - `Services` maneja la integracion externa
 - `Utils` contiene logica auxiliar para lectura y escritura de CSV
 
-La seccion [Explicacion de Twelve-Factor App](#12-factor-app-explanation) conecta estas decisiones tecnicas con los factores que mas se notan en este proyecto, como configuracion, logs y backing services.
+Las decisiones de arquitectura, el flujo de configuracion, el modelo de ejecucion y el comportamiento operativo de la aplicacion se explican con mayor detalle en la seccion **Explicacion de Twelve-Factor App**, donde cada aspecto relevante del proyecto se conecta con su factor correspondiente.
 
 <a id="architecture"></a>
-## 🧱 Arquitectura: Controller-Based ASP.NET Core Web API
+## 🧱 Arquitectura
 
-![Diagrama de Arquitectura](assets/architecture-diagram.png)<br>
-Fuente: Elaboración Propia. <br>
+![Diagrama de Arquitectura](assets/architecture-diagram.png)
 
-El proyecto sigue una arquitectura de ASP.NET Core Web API basada en controllers y organizada por capas. En la parte superior, la capa de entrada incluye `Program.cs` y los controllers, que configuran la aplicacion y reciben las solicitudes HTTP mediante los endpoints de la API. La capa de aplicacion contiene `Models`, `Services` y `Utils`, donde se organiza la estructura de datos, la logica del negocio, la comunicacion con la API externa y el manejo del archivo CSV. La capa de infraestructura incluye la API externa y el archivo `CitizenDataStore.csv`, que actuan como la fuente de datos externa y el mecanismo de persistencia usado por el sistema.
+La aplicacion sigue una arquitectura por capas tipica de una ASP.NET Core Web API.
 
-Desde un punto de vista practico, el flujo comienza cuando el `Client - FrontEnd`, como Swagger UI, envia una solicitud HTTP a uno de los endpoints del controller. El controller recibe esa solicitud y se convierte en el punto que conecta el resto del sistema: usa los models para representar datos, los services para manejar logica y comunicacion externa, y los utils para gestionar operaciones de archivos. Si la operacion lo requiere, la aplicacion lee o escribe en el archivo CSV y tambien puede consultar la API externa. Una vez que todo se procesa, el controller envia el resultado de vuelta al cliente como respuesta JSON. De esta manera, el diagrama muestra no solo como se organiza internamente el proyecto, sino tambien como cada solicitud se mueve desde el cliente hacia el backend y regresa otra vez.
+### 🔵 Capa de Entrada
+
+Se encarga del inicio de la aplicacion y de las solicitudes entrantes.
+
+- **Program.cs**: Configura la aplicacion, incluyendo inyeccion de dependencias, logging, middleware y Swagger.
+- **Controllers**: Manejan las solicitudes HTTP entrantes y coordinan el flujo de la aplicacion.
+
+### 🟢 Capa de Aplicacion
+
+Contiene la logica principal y las estructuras de datos del sistema.
+
+- **Models**: Definen las estructuras de datos y los objetos de solicitud/respuesta.
+- **Services**: Gestionan la logica del negocio y la comunicacion con APIs externas.
+- **Utils**: Manejan operaciones de persistencia en CSV y administracion de archivos.
+
+### 🟡 Capa de Infraestructura
+
+Gestiona sistemas externos y persistencia de datos.
+
+- **External API**: Proporciona datos adicionales desde fuera de la aplicacion.
+- **Archivo de persistencia (`CitizenDataStore.csv`)**: Almacena y recupera los datos de la aplicacion.
+
 
 <a id="12-factor-app-explanation"></a>
 ## 📚 Explicacion de Twelve-Factor App
@@ -114,9 +159,9 @@ Desde un punto de vista practico, el flujo comienza cuando el `Client - FrontEnd
 > One codebase tracked in revision control, many deploys. <br>
 > Un solo codebase rastreado en control de versiones, muchos despliegues.
 
-El proyecto se administra en un unico repositorio Git y esta publicado en GitHub. La mayor parte del trabajo de desarrollo se realizo mediante commits en la rama de practica `P2-001`.
+El proyecto se administra en un unico repositorio Git y esta publicado en GitHub. El desarrollo se realizo mediante commits en la rama de practica `P2-001`.
 
-Mantener todo en un solo codebase compartido y con historial visible favorece la trazabilidad y se ajusta bien a este factor.
+Mantener el proyecto en un solo codebase compartido con historial visible favorece la trazabilidad y se alinea con este factor.
 
 <a id="factor-2-dependencies"></a>
 ### 2. Dependencies
@@ -126,7 +171,7 @@ Mantener todo en un solo codebase compartido y con historial visible favorece la
 
 Las dependencias estan declaradas explicitamente en el archivo `CitizensAPI.csproj`.
 
-Las referencias actuales de paquetes incluyen:
+Referencias de paquetes actuales:
 
 | Paquete | Version |
 | --- | --- |
@@ -148,33 +193,9 @@ Las referencias actuales de paquetes incluyen:
 > Store config in the environment. <br>
 > Almacenar la configuracion en el entorno.
 
-Este proyecto mantiene la configuracion operativa fuera de la logica de negocio y tambien fuera de los controllers o services. En la practica, usa `appsettings.json`, `appsettings.Development.json` y variables de entorno, siendo estas ultimas lo mas cercano a la recomendacion de Twelve-Factor.
+La configuracion practica de la aplicacion se describe en la seccion [Configuracion](#configuration) mas abajo.
 
-Esta configuracion se carga en `Program.cs`, de modo que los valores de ejecucion pueden ajustarse sin cambiar la logica principal de la aplicacion.
-
-Valores de ejemplo del proyecto actual:
-
-```json
-{
-  "Data": {
-    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
-  },
-  "External Services": {
-    "ObjectsApi": {
-      "BaseUrl": "https://api.restful-api.dev/"
-    }
-  }
-}
-```
-
-Nota: en la configuracion actual de desarrollo, `Data:Location` usa una ruta local absoluta de Windows. Esto funciona en la maquina actual para el entorno academico, pero es menos portable y menos alineado con Twelve-Factor a menos que se sobrescriba mediante variables de entorno.
-
-Ejemplos de override con variables de entorno:
-
-```powershell
-$env:Data__Location="D:\\path\\to\\CitizenDataStore.csv"
-$env:ASPNETCORE_ENVIRONMENT="Development"
-```
+Desde la perspectiva Twelve-Factor, este proyecto externaliza la configuracion mediante `appsettings.json`, `appsettings.Development.json` y variables de entorno, en lugar de hardcodear valores operativos en controllers o servicios.
 
 <a id="factor-4-backing-services"></a>
 ### 4. Backing Services
@@ -186,7 +207,7 @@ El proyecto utiliza el servicio externo:
 
 - `https://api.restful-api.dev/objects`
 
-En este proyecto, el servicio externo se trata como un recurso adjunto que puede reemplazarse o reconfigurarse sin cambiar la logica principal del negocio.
+Este servicio se trata como un recurso adjunto que puede reemplazarse o reconfigurarse sin cambiar la logica principal del negocio.
 
 <a id="factor-5-build-release-run"></a>
 ### 5. Build, Release, Run
@@ -194,13 +215,14 @@ En este proyecto, el servicio externo se trata como un recurso adjunto que puede
 > Strictly separate build and run stages. <br>
 > Separar estrictamente las etapas de build y run.
 
-En este proyecto, estas etapas pueden entenderse de una manera simple:
+La aplicacion separa las siguientes etapas:
 
-- **Build**: `dotnet build` compila el codigo y verifica que el proyecto sea valido.
-- **Release**: la aplicacion puede prepararse para ejecucion o despliegue usando el codigo y la configuracion actuales, sin modificar el codigo fuente. Esto se muestra de forma mas practica en la seccion [Development](#development), especialmente en **Build for Production**.
-- **Run**: `dotnet run` inicia la aplicacion.
+- build: `dotnet build`
+- run: `dotnet run`
 
-Como puede verse, build y run se tratan como etapas separadas y repetibles.
+La version liberable puede generarse desde el estado del repositorio y la configuracion, sin cambiar el codigo fuente.
+
+En este proyecto, build y run se tratan como etapas separadas y repetibles.
 
 <a id="factor-6-processes"></a>
 ### 6. Processes
@@ -208,14 +230,13 @@ Como puede verse, build y run se tratan como etapas separadas y repetibles.
 > Execute the app as one or more stateless processes. <br>
 > Ejecutar la aplicacion como uno o mas procesos sin estado.
 
-La API esta pensada para comportarse como un proceso web sin estado.
+La API esta disenada para comportarse como un proceso web sin estado.
 
 Los datos de ciudadanos no se almacenan permanentemente dentro de la aplicacion en ejecucion. En su lugar, los datos persistentes se guardan en el archivo CSV:
 
 - `CitizenDataStore.csv`
 
-Cada operacion lee el estado actual desde el archivo, aplica el cambio solicitado y escribe el estado actualizado de vuelta en el CSV. En este proyecto, `async/await` se usa para la llamada a la API externa. Esto significa que la aplicacion puede solicitar datos al servicio externo y esperar la respuesta de una manera organizada antes de continuar. Conceptualmente, ayuda a que el codigo maneje operaciones que toman tiempo, como las solicitudes HTTP, de una forma mas limpia y apropiada para una Web API.
-
+Cada operacion lee el estado actual desde el archivo, aplica el cambio solicitado y escribe el estado actualizado de vuelta en el CSV. El proyecto tambien usa `async/await` para llamadas a la API externa, de modo que la aplicacion no bloquee innecesariamente mientras espera respuestas.
 
 <a id="factor-7-port-binding"></a>
 ### 7. Port Binding
@@ -251,12 +272,14 @@ Configuracion de lanzamiento actual:
 > Scale out via the process model. <br>
 > Escalar mediante el modelo de procesos.
 
-| La concurrencia esta implementada solo parcialmente. La API es mayormente stateless, pero el uso de persistencia en CSV limita un escalado horizontal seguro. |
-| --- |
+| Resumen | La API es mayormente stateless, pero la persistencia en CSV impide un escalado horizontal seguro. |
+| --- | --- |
+
+Este factor no esta implementado completamente en el proyecto actual.
 
 En este proyecto, la aplicacion esta disenada de manera mayormente stateless a nivel de API, pero su capa de persistencia es un unico archivo CSV. El proyecto incluye bloqueo en proceso para acceso al archivo, lo cual ayuda a evitar corrupcion dentro de una sola instancia en ejecucion. Sin embargo, como la aplicacion reescribe el archivo CSV durante operaciones de creacion, actualizacion y eliminacion, todavia no ofrece coordinacion completa para multiples procesos o multiples instancias desplegadas.
 
-Por esa razon, el proyecto no esta preparado para un escalado concurrente real entre multiples procesos o instancias. El uso de `async/await` mejora el manejo de llamadas a la API externa al evitar bloqueos innecesarios, pero por si solo no garantiza concurrencia segura ni escalabilidad horizontal. En esta practica, la concurrencia se aborda solo de manera parcial y conceptual.
+Por esa razon, el proyecto no esta preparado para un escalado concurrente real entre multiples procesos o instancias. El uso de `async/await` mejora el manejo de llamadas a la API externa al evitar bloqueos innecesarios, pero por si solo no garantiza concurrencia segura ni escalabilidad horizontal. En este proyecto, la concurrencia se aborda solo de manera conceptual.
 
 En el futuro, este factor podria aplicarse con mayor fuerza mediante:
 
@@ -271,7 +294,7 @@ En el futuro, este factor podria aplicarse con mayor fuerza mediante:
 > Maximize robustness with fast startup and graceful shutdown. <br>
 > Maximizar la robustez con inicio rapido y apagado ordenado.
 
-La aplicacion inicia rapidamente con `dotnet run` y puede detenerse sin requerir pasos complejos de cierre, solo presionando `Ctrl + C`. Como los datos se almacenan en el archivo CSV, reiniciar el proceso no elimina los registros de ciudadanos ya guardados.
+La aplicacion inicia rapidamente con `dotnet run` y puede detenerse sin requerir pasos complejos de cierre, por ejemplo presionando `Ctrl + C`. Como los datos persistentes se almacenan en el archivo CSV, los reinicios del proceso no provocan perdida de informacion de ciudadanos.
 
 <a id="factor-10-dev-prod-parity"></a>
 ### 10. Dev / Prod Parity
@@ -279,7 +302,7 @@ La aplicacion inicia rapidamente con `dotnet run` y puede detenerse sin requerir
 > Keep development, staging, and production as similar as possible. <br>
 > Mantener desarrollo, staging y produccion tan similares como sea posible.
 
-Desarrollo y produccion deben mantenerse lo mas similares posible mediante:
+Desarrollo y produccion deben permanecer lo mas similares posible mediante:
 
 - usar el mismo codebase
 - usar las mismas definiciones de dependencias
@@ -287,8 +310,7 @@ Desarrollo y produccion deben mantenerse lo mas similares posible mediante:
 
 Esto reduce diferencias innecesarias entre entornos.
 
-Tambien es importante **evitar** detalles especificos de una maquina en el repositorio, como **rutas locales absolutas, archivos generados o finales de linea inconsistentes.** En este proyecto, por ejemplo, el valor actual de `Data:Location` usa una ruta absoluta de Windows, lo cual funciona para el entorno academico actual, pero no es ideal para la portabilidad. Esta es una de las razones por las que los valores especificos del entorno deben manejarse mediante configuracion y variables de entorno, en lugar de depender de una sola maquina. La portabilidad tambien mejora al ignorar archivos generados y al usar `.gitattributes` para definir explicitamente finales de linea **Line Feed (LF)**.
-
+Es importante evitar ruido especifico de una maquina en el repositorio y mantener el proyecto portable mediante configuracion y archivos generados ignorados.
 
 <a id="factor-11-logs"></a>
 ### 11. Logs
@@ -296,17 +318,31 @@ Tambien es importante **evitar** detalles especificos de una maquina en el repos
 > Treat logs as event streams. <br>
 > Tratar los logs como flujos de eventos.
 
-| El logging es una de las partes operativas mas fuertes porque ayuda a rastrear solicitudes, detectar errores y entender lo que ocurre durante la ejecucion. |
-| --- |
+| Resumen | El logging es una de las partes operativas mas fuertes del proyecto porque mejora la observabilidad, la solucion de problemas y el seguimiento de la ejecucion. |
+| --- | --- |
 
+Los logs se tratan como flujos de eventos escritos por la aplicacion.
 
-Los logs se manejan con Serilog y se usan principalmente para registrar eventos importantes de la aplicacion, como operaciones CRUD, comunicacion con la API externa y casos de falla. Esto mejora la observabilidad y apoya la depuracion, especialmente durante el desarrollo.
+La implementacion actual registra:
 
-La implementacion usa niveles de log como `Debug`, `Information`, `Warning` y `Error`, lo cual ayuda a separar eventos normales de advertencias y fallos. De esta manera, el proyecto sigue la idea de Twelve-Factor de tratar los logs como un flujo de eventos util durante la ejecucion.
+- creacion de ciudadanos
+- actualizacion de ciudadanos
+- eliminacion de ciudadanos
+- llamadas a la API externa
+- fallos de lectura de archivos
+- fallos en operaciones de la API
 
-Es importante notar que el logging se aplica en partes relevantes del proyecto, como el flujo de los controllers y el servicio de la API externa, pero no en todas las partes del repositorio. Esto ayuda a mantener los logs enfocados y a evitar ruido innecesario.
+En este proyecto, Serilog usa niveles de log para controlar que eventos se registran. El orden de severidad comienza con `Debug`, seguido de `Information`, `Warning`, `Error` y `Fatal`.
 
-Desde una perspectiva de seguridad, esto tambien requiere cuidado. Algunos logs actuales incluyen valores como la ruta del archivo CSV, numeros de CI de ciudadanos e informacion de activos personales. Aunque esto puede ser util para depuracion en un entorno academico, en un sistema mas seguro o mas orientado a produccion podria exponer datos sensibles o informacion interna innecesaria. Por eso, el contenido de los logs debe revisarse cuidadosamente y reducirse cuando pueda revelar informacion confidencial o personal.
+Cuando `MinimumLevel` se establece en `Debug`, la aplicacion no registra solo mensajes debug. Registra todos los mensajes desde `Debug` hacia arriba, incluyendo `Information`, `Warning`, `Error` y `Fatal`. En otras palabras, `Debug` actua como el umbral mas bajo, por lo que todo nivel superior tambien queda incluido.
+
+Esto es util en desarrollo porque permite un seguimiento detallado del comportamiento de la aplicacion, lo cual ayuda durante la depuracion.
+
+En la implementacion actual, `Debug` se usa para trazas internas del flujo, como cargar el CSV, buscar ciudadanos, preparar escrituras de archivo y enviar solicitudes a la API externa. `Information` se usa para eventos exitosos del negocio, como cargar ciudadanos, crear un ciudadano, actualizarlo, eliminarlo o recibir datos validos desde la API externa.
+
+`Warning` se usa para situaciones importantes que no rompen completamente la aplicacion. Por ejemplo, cuando no se encuentra un ciudadano, cuando se detecta un CI duplicado, cuando la API externa no devuelve activos disponibles o cuando se encuentran filas mal formadas en el CSV. `Error` se usa en bloques `try-catch` y escenarios de falla donde una operacion no pudo completarse correctamente, como errores de lectura de archivos, fallos de la API externa o excepciones CRUD.
+
+Esto complementa la idea Twelve-Factor de tratar los logs como flujos de eventos porque la aplicacion no solo escribe logs, sino que tambien los clasifica por severidad y proposito. De esta manera, los logs se vuelven mas utiles para debugging, monitoreo, mantenimiento y comprension del comportamiento del sistema durante la ejecucion.
 
 <a id="factor-12-admin-processes"></a>
 ### 12. Admin Processes
@@ -314,17 +350,19 @@ Desde una perspectiva de seguridad, esto tambien requiere cuidado. Algunos logs 
 > Run admin/management tasks as one-off processes. <br>
 > Ejecutar tareas administrativas como procesos puntuales e independientes.
 
-| El mantenimiento esta soportado indirectamente por los logs, pero todavia no existe un comando o script administrativo dedicado. Por eso, este factor no esta implementado completamente como un proceso administrativo independiente de ejecucion unica en el proyecto actual. |
-| --- |
+| Resumen | El mantenimiento esta soportado indirectamente por los logs, pero todavia no existe un comando o script administrativo dedicado. |
+| --- | --- |
 
-En este repositorio no se incluye un script o comando dedicado para tareas administrativas como:
+Este factor no esta implementado completamente como un proceso administrativo independiente de ejecucion unica en el proyecto actual.
+
+En este proyecto, el repositorio no incluye un script o comando especifico para tareas administrativas como:
 
 - limpiar el archivo CSV
 - reiniciar datos almacenados de ciudadanos
 - sembrar registros iniciales
 - migrar la estructura del archivo
 
-Si la aplicacion se extiende en el futuro y se orienta a ser mas escalable o mas cercana a un sistema real, estas tareas administrativas deberian implementarse. Aun asi, el proyecto ya incluye elementos de soporte que pueden ayudar a futuras tareas de mantenimiento y administracion.
+Sin embargo, el proyecto ya incluye elementos de soporte que pueden ayudar a futuras tareas de mantenimiento y administracion.
 
 Por ejemplo, la implementacion actual de logging ayuda con:
 
@@ -335,10 +373,14 @@ Por ejemplo, la implementacion actual de logging ayuda con:
 
 Por ello, este factor se aborda solo de manera parcial y conceptual en esta practica.
 
-Los logs brindan soporte util para mantenimiento y administracion, pero no reemplazan un verdadero proceso administrativo.
+Los logs brindan soporte util para mantenimiento y administracion, pero no reemplazan un verdadero proceso administrativo. En este proyecto, una tarea administrativa real seria un script o comando separado de ejecucion unica para actividades como limpiar `CitizenDataStore.csv`, precargar ciudadanos de ejemplo, reparar filas mal formadas o migrar la estructura del CSV si cambia el modelo.
+
+En el futuro, este factor podria aplicarse de manera mas completa agregando un script o comando de mantenimiento dedicado para limpiar, reiniciar, sembrar o migrar los datos del CSV.
 
 <a id="api-endpoints"></a>
 ## 🔌 Endpoints de la API
+
+> Nota: las notas de respuesta en esta seccion documentan el comportamiento actual del controller en el repositorio, incluso cuando ese comportamiento es menos estricto que las convenciones REST ideales.
 
 | Operacion | Endpoint | Resultado principal |
 | --- | --- | --- |
@@ -365,9 +407,9 @@ Ejemplo de solicitud:
 
 ```json
 {
-  "firstName": "Hans",
-  "lastName": "Tanaka",
-  "ci": 80751770
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456
 }
 ```
 
@@ -375,9 +417,9 @@ Forma del ciudadano creado:
 
 ```json
 {
-  "firstName": "Hans",
-  "lastName": "Tanaka",
-  "ci": 80751770,
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456,
   "bloodGroup": "O+",
   "personalAsset": "Apple Watch"
 }
@@ -403,15 +445,15 @@ Ejemplo de respuesta:
 ```json
 [
   {
-    "firstName": "Hans",
-    "lastName": "Tanaka",
-    "ci": 80751770,
+    "firstName": "Ana",
+    "lastName": "Lopez",
+    "ci": 123456,
     "bloodGroup": "O+",
     "personalAsset": "Apple Watch"
   },
   {
-    "firstName": "Gundham",
-    "lastName": "Gamboa",
+    "firstName": "Luis",
+    "lastName": "Rojas",
     "ci": 654321,
     "bloodGroup": "A-",
     "personalAsset": "Keyboard"
@@ -432,9 +474,9 @@ Ejemplo de respuesta:
 
 ```json
 {
-  "firstName": "Hans",
-  "lastName": "Tanaka",
-  "ci": 80751770,
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456,
   "bloodGroup": "O+",
   "personalAsset": "Apple Watch"
 }
@@ -453,8 +495,8 @@ Ejemplo de solicitud:
 
 ```json
 {
-  "firstName": "Hanigo Hans",
-  "lastName": "Tanaka"
+  "firstName": "Ana Maria",
+  "lastName": "Lopez"
 }
 ```
 
@@ -477,8 +519,8 @@ Comportamiento actual de respuesta:
 Archivo: `CitizenDataStore.csv`
 
 ```csv
-Susan,Laime,123456,O-,Laptop
-Hanigo Hans,Tanaka,80751770,O+,Apple Watch
+Susan,Laime,1,O+,Laptop
+Juan,Perez,2,A-,Mouse
 ```
 
 <a id="operational-notes"></a>
@@ -490,7 +532,7 @@ Hanigo Hans,Tanaka,80751770,O+,Apple Watch
 - El perfil de lanzamiento actual usa `https://localhost:9070`.
 - El repositorio sigue un estilo orientado a controllers en lugar del estilo minimal scripting.
 
-En conjunto, estos elementos ayudan a explicar como la aplicacion esta configurada, ejecutada y mantenida.
+Todos estos elementos ayudan a comprender como la aplicacion esta configurada, ejecutada y mantenida.
 
 <a id="tech-stack"></a>
 ## 🧰 Stack Tecnologico
@@ -563,10 +605,52 @@ Estos archivos definen ajustes importantes como:
 - ubicacion del almacenamiento CSV
 - URL base de la API externa
 - configuracion de Serilog
-- seleccion del entorno mediante `ASPNETCORE_ENVIRONMENT`
+- valores del entorno local de desarrollo
 
-Este paso de configuracion esta directamente relacionado con el factor [Config](#factor-3-config) explicado arriba, donde el enfoque de configuracion del proyecto se describe en terminos arquitectonicos y practicos.
+<a id="configuration"></a>
+## 🗝️ Configuracion
 
+La aplicacion usa archivos de configuracion externos y variables de entorno para definir su comportamiento en ejecucion.
+
+Las principales fuentes de configuracion son:
+
+- `appsettings.json`
+- `appsettings.Development.json`
+- `Properties/launchSettings.json`
+- variables de entorno
+
+Estas fuentes controlan ajustes como:
+
+- ubicacion del almacenamiento CSV
+- URL base de la API externa
+- niveles de log y salidas de Serilog
+- seleccion de entorno mediante `ASPNETCORE_ENVIRONMENT`
+
+Esta configuracion se carga en `Program.cs`, permitiendo mantener los valores operativos fuera de la logica del negocio.
+
+Valores de ejemplo del proyecto actual:
+
+```json
+{
+  "Data": {
+    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
+  },
+  "External Services": {
+    "ObjectsApi": {
+      "BaseUrl": "https://api.restful-api.dev/"
+    }
+  }
+}
+```
+
+Nota: en la configuracion actual de desarrollo, `Data:Location` usa una ruta local absoluta de Windows. Esto coincide con el repositorio tal como esta hoy, pero reduce la portabilidad a menos que se sobrescriba mediante configuracion o variables de entorno.
+
+Ejemplos de override con variables de entorno:
+
+```powershell
+$env:Data__Location="D:\\path\\to\\CitizenDataStore.csv"
+$env:ASPNETCORE_ENVIRONMENT="Development"
+```
 
 <a id="running-the-application"></a>
 ## ▶️ Ejecucion de la Aplicacion
@@ -583,11 +667,11 @@ dotnet run
 
 Cuando el entorno esta establecido en `Development`, la aplicacion tambien habilita:
 
-- Swagger UI para probar endpoints en `https://localhost:9070/swagger/index.html`
+- Swagger UI para probar endpoints
 - configuracion especifica de desarrollo desde `appsettings.Development.json`
 - mapeo OpenAPI mediante `app.MapOpenApi()`
 
-### Consideraciones
+### Notas
 
 - Asegurate de que la API externa `https://api.restful-api.dev/objects` sea alcanzable
 - Asegurate de que la ruta del archivo CSV configurada en app settings sea valida
@@ -624,18 +708,15 @@ CitizensAPI/
 └── README.md
 ```
 
-Los artefactos generados en ejecucion, como `Logs/`, `bin/` y `obj/`, no forman parte de la estructura central del codigo fuente y por eso se omiten en esta vista general. Ademas, la carpeta `assets/` fue agregada al proyecto para guardar la imagen del diagrama de arquitectura.
+Los artefactos generados en ejecucion, como `Logs/`, `bin/` y `obj/`, no forman parte de la estructura central del codigo fuente y por eso se omiten en esta vista general.
 
-| Area / Archivo | Responsabilidad |
+| Area | Responsabilidad |
 | --- | --- |
 | `Controllers` | Expone los endpoints de la API y coordina las operaciones CRUD |
 | `Models` | Contiene las entidades de dominio y modelos de solicitud |
-| `Properties` | Contiene ajustes locales de ejecucion como la URL de la aplicacion y el perfil de entorno |
 | `Services` | Maneja la comunicacion con la API externa mediante `CitizenBGService` |
 | `Utils` | Contiene logica auxiliar para persistencia en CSV |
-| `CitizensAPI.sln` | Organiza la solucion para abrir y administrar el proyecto en Visual Studio |
 | `Program.cs` | Configura el pipeline de la aplicacion, servicios, logging y Swagger |
-
 
 <a id="development"></a>
 ## 💻 Desarrollo
@@ -681,9 +762,9 @@ Los artefactos generados en ejecucion, como `Logs/`, `bin/` y `obj/`, no forman 
 | Swagger | Probar endpoints de forma interactiva |
 | Salidas de Serilog | Revisar comportamiento en ejecucion y errores |
 
-### Build for Production
+### Compilacion para Produccion
 
-Una version lista para publicarse o desplegarse de la aplicacion puede generarse con:
+Una version publicable del proyecto puede generarse con:
 
 ```bash
 dotnet publish -c Release
@@ -716,8 +797,8 @@ dotnet publish -c Release
 
 <a id="critical-security-notes"></a>
 ## 🔒 Notas Criticas de Seguridad
-| La API actual no implementa autenticacion ni autorizacion, por lo que debe tratarse como un proyecto academico y no como un servicio seguro listo para produccion. |
-| --- |
+
+> Critico: la API actual no implementa autenticacion ni autorizacion, por lo que debe tratarse como un proyecto academico y no como un servicio seguro listo para produccion.
 
 Desde una perspectiva de ciberseguridad, la limitacion mas critica del proyecto actual es la ausencia de autenticacion y autorizacion. Cualquier cliente que pueda alcanzar la API puede crear, leer, actualizar o eliminar registros de ciudadanos, lo que significa que el acceso a informacion personal no esta restringido adecuadamente.
 
@@ -727,7 +808,7 @@ Tambien existen otros riesgos de seguridad relevantes:
 - la API externa usada para activos personales debe tratarse como entrada no confiable y sus respuestas deben validarse cuidadosamente
 - los logs son utiles para observabilidad, pero en un despliegue real deben evitar exponer datos personales innecesarios o detalles internos sensibles
 
-Aun asi, el proyecto ya tiene algunas bases positivas de seguridad, incluyendo **HTTPS local**, configuracion fuera del codebase, Swagger limitado a desarrollo y logging estructurado mediante Serilog. Aun asi, el estado actual debe entenderse como una implementacion academica y no como un sistema seguro listo para produccion.
+El proyecto ya tiene algunas bases positivas de seguridad, incluyendo HTTPS local, configuracion fuera del codebase, Swagger limitado a desarrollo y logging estructurado mediante Serilog. Aun asi, el estado actual debe entenderse como una implementacion academica y no como un sistema seguro listo para produccion.
 
 <a id="security-improvements"></a>
 ## 🛡️ Mejoras de Seguridad
@@ -741,11 +822,6 @@ Si el proyecto evoluciona mas alla del ambito academico, las mejoras mas importa
 - mantener las acciones administrativas controladas y auditables
 - mantener ramas protegidas y merges controlados como parte de una practica de desarrollo seguro
 
-<a id="conclusion"></a>
-## 📝 Conclusion
-
-Este proyecto aplica los principios de Twelve-Factor App a un nivel practico al combinar gestion de configuracion, integracion con servicios externos, logging estructurado y una arquitectura simple orientada al mantenimiento. Aunque algunos factores, como concurrencia y procesos administrativos, no estan implementados o solo lo estan parcialmente, el repositorio documenta tanto lo que ya funciona como lo que podria mejorarse en una version futura.
-
 <a id="references"></a>
 ## 📚 Referencias
 
@@ -756,3 +832,19 @@ Este proyecto aplica los principios de Twelve-Factor App a un nivel practico al 
 5. Microsoft. (2022, April 13). *Storing application secrets safely during development*. Microsoft Learn. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
 6. OWASP Foundation. (2023). *OWASP API Security Top 10*. https://owasp.org/API-Security/
 7. serilog. (n.d.). *Serilog.AspNetCore*. GitHub. https://github.com/serilog/serilog-aspnetcore
+
+<a id="contact-and-support"></a>
+## 📞 Contacto y Soporte
+
+Si tienes preguntas sobre el proyecto, la implementacion o la entrega del curso, puedes contactarme aqui:
+
+- Autora: Susan Laime Lucero
+- Email: `susanlaimel1@upb.edu`
+- Ultima actualizacion: March 18, 2026
+- Estado: proyecto academico en funcionamiento
+- Licencia: MIT License
+
+<a id="conclusion"></a>
+## 📝 Conclusion
+
+Este proyecto aplica los principios de Twelve-Factor App a un nivel practico al combinar gestion de configuracion, integracion con servicios externos, logging estructurado y una arquitectura simple orientada al mantenimiento. Aunque algunos factores, como concurrencia y procesos administrativos, solo estan implementados parcialmente, el repositorio documenta claramente tanto lo que ya funciona como lo que podria mejorarse en un desarrollo futuro.
