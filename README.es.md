@@ -156,7 +156,7 @@ Gestiona sistemas externos y persistencia de datos.
 <a id="factor-1-codebase"></a>
 ### 1. Codebase
 
-> One codebase tracked in revision control, many deploys.
+> One codebase tracked in revision control, many deploys. <br>
 > Un solo codebase rastreado en control de versiones, muchos despliegues.
 
 El proyecto se administra en un unico repositorio Git y esta publicado en GitHub. El desarrollo se realizo mediante commits en la rama de practica `P2-001`.
@@ -166,7 +166,7 @@ Mantener el proyecto en un solo codebase compartido con historial visible favore
 <a id="factor-2-dependencies"></a>
 ### 2. Dependencies
 
-> Explicitly declare and isolate dependencies.
+> Explicitly declare and isolate dependencies. <br>
 > Declarar y aislar dependencias de forma explicita.
 
 Las dependencias estan declaradas explicitamente en el archivo `CitizensAPI.csproj`.
@@ -190,7 +190,7 @@ Referencias de paquetes actuales:
 <a id="factor-3-config"></a>
 ### 3. Config
 
-> Store config in the environment.
+> Store config in the environment. <br>
 > Almacenar la configuracion en el entorno.
 
 La configuracion practica de la aplicacion se describe en la seccion [Configuracion](#configuration) mas abajo.
@@ -200,7 +200,7 @@ Desde la perspectiva Twelve-Factor, este proyecto externaliza la configuracion m
 <a id="factor-4-backing-services"></a>
 ### 4. Backing Services
 
-> Treat backing services as attached resources.
+> Treat backing services as attached resources. <br>
 > Tratar los servicios de soporte como recursos adjuntos.
 
 El proyecto utiliza el servicio externo:
@@ -212,7 +212,7 @@ Este servicio se trata como un recurso adjunto que puede reemplazarse o reconfig
 <a id="factor-5-build-release-run"></a>
 ### 5. Build, Release, Run
 
-> Strictly separate build and run stages.
+> Strictly separate build and run stages. <br>
 > Separar estrictamente las etapas de build y run.
 
 La aplicacion separa las siguientes etapas:
@@ -227,7 +227,7 @@ En este proyecto, build y run se tratan como etapas separadas y repetibles.
 <a id="factor-6-processes"></a>
 ### 6. Processes
 
-> Execute the app as one or more stateless processes.
+> Execute the app as one or more stateless processes. <br>
 > Ejecutar la aplicacion como uno o mas procesos sin estado.
 
 La API esta disenada para comportarse como un proceso web sin estado.
@@ -241,7 +241,7 @@ Cada operacion lee el estado actual desde el archivo, aplica el cambio solicitad
 <a id="factor-7-port-binding"></a>
 ### 7. Port Binding
 
-> Export services via port binding.
+> Export services via port binding. <br>
 > Exponer servicios mediante enlace a puertos.
 
 La aplicacion se expone a traves del servidor web de ASP.NET Core y puede accederse por el puerto local configurado al ejecutarse con `dotnet run` o con el perfil de lanzamiento.
@@ -269,12 +269,13 @@ Configuracion de lanzamiento actual:
 <a id="factor-8-concurrency"></a>
 ### 8. Concurrency
 
-> Scale out via the process model.
+> Scale out via the process model. <br>
 > Escalar mediante el modelo de procesos.
 
-Este factor no esta implementado completamente en el proyecto actual.
+| Resumen | La API es mayormente stateless, pero la persistencia en CSV impide un escalado horizontal seguro. |
+| --- | --- |
 
-> Resumen: la API es mayormente stateless, pero la persistencia en CSV impide un escalado horizontal seguro.
+Este factor no esta implementado completamente en el proyecto actual.
 
 En este proyecto, la aplicacion esta disenada de manera mayormente stateless a nivel de API, pero su capa de persistencia es un unico archivo CSV. El proyecto incluye bloqueo en proceso para acceso al archivo, lo cual ayuda a evitar corrupcion dentro de una sola instancia en ejecucion. Sin embargo, como la aplicacion reescribe el archivo CSV durante operaciones de creacion, actualizacion y eliminacion, todavia no ofrece coordinacion completa para multiples procesos o multiples instancias desplegadas.
 
@@ -290,7 +291,7 @@ En el futuro, este factor podria aplicarse con mayor fuerza mediante:
 <a id="factor-9-disposability"></a>
 ### 9. Disposability
 
-> Maximize robustness with fast startup and graceful shutdown.
+> Maximize robustness with fast startup and graceful shutdown. <br>
 > Maximizar la robustez con inicio rapido y apagado ordenado.
 
 La aplicacion inicia rapidamente con `dotnet run` y puede detenerse sin requerir pasos complejos de cierre, por ejemplo presionando `Ctrl + C`. Como los datos persistentes se almacenan en el archivo CSV, los reinicios del proceso no provocan perdida de informacion de ciudadanos.
@@ -298,7 +299,7 @@ La aplicacion inicia rapidamente con `dotnet run` y puede detenerse sin requerir
 <a id="factor-10-dev-prod-parity"></a>
 ### 10. Dev / Prod Parity
 
-> Keep development, staging, and production as similar as possible.
+> Keep development, staging, and production as similar as possible. <br>
 > Mantener desarrollo, staging y produccion tan similares como sea posible.
 
 Desarrollo y produccion deben permanecer lo mas similares posible mediante:
@@ -314,8 +315,11 @@ Es importante evitar ruido especifico de una maquina en el repositorio y mantene
 <a id="factor-11-logs"></a>
 ### 11. Logs
 
-> Treat logs as event streams.
+> Treat logs as event streams. <br>
 > Tratar los logs como flujos de eventos.
+
+| Resumen | El logging es una de las partes operativas mas fuertes del proyecto porque mejora la observabilidad, la solucion de problemas y el seguimiento de la ejecucion. |
+| --- | --- |
 
 Los logs se tratan como flujos de eventos escritos por la aplicacion.
 
@@ -327,8 +331,6 @@ La implementacion actual registra:
 - llamadas a la API externa
 - fallos de lectura de archivos
 - fallos en operaciones de la API
-
-> Resumen: el logging es una de las partes operativas mas fuertes del proyecto porque mejora la observabilidad, la solucion de problemas y el seguimiento de la ejecucion.
 
 En este proyecto, Serilog usa niveles de log para controlar que eventos se registran. El orden de severidad comienza con `Debug`, seguido de `Information`, `Warning`, `Error` y `Fatal`.
 
@@ -345,12 +347,13 @@ Esto complementa la idea Twelve-Factor de tratar los logs como flujos de eventos
 <a id="factor-12-admin-processes"></a>
 ### 12. Admin Processes
 
-> Run admin/management tasks as one-off processes.
+> Run admin/management tasks as one-off processes. <br>
 > Ejecutar tareas administrativas como procesos puntuales e independientes.
 
-Este factor no esta implementado completamente como un proceso administrativo independiente de ejecucion unica en el proyecto actual.
+| Resumen | El mantenimiento esta soportado indirectamente por los logs, pero todavia no existe un comando o script administrativo dedicado. |
+| --- | --- |
 
-> Resumen: el mantenimiento esta soportado indirectamente por los logs, pero todavia no existe un comando o script administrativo dedicado.
+Este factor no esta implementado completamente como un proceso administrativo independiente de ejecucion unica en el proyecto actual.
 
 En este proyecto, el repositorio no incluye un script o comando especifico para tareas administrativas como:
 

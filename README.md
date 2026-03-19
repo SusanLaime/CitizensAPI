@@ -260,9 +260,10 @@ Current launch configuration:
 
 > Scale out via the process model.
 
-This factor is not fully implemented in the current project.
+| Summary | the API is mostly stateless, but CSV persistence prevents safe horizontal scaling. |
+| --- | --- |
 
-> Summary: the API is mostly stateless, but CSV persistence prevents safe horizontal scaling.
+This factor is not fully implemented in the current project.
 
 In this project, the application is designed in a mostly stateless way at the API level, but its persistence layer is a single CSV file. The project includes in-process locking for file access, which helps avoid corruption inside a single running instance. However, because the application rewrites the CSV file during create, update, and delete operations, it still does not provide full coordination for multiple processes or multiple deployed instances.
 
@@ -302,6 +303,9 @@ It is important to avoid machine-specific noise in the repository and keep the p
 
 > Treat logs as event streams.
 
+| Summary | logging is one of the strongest operational parts of the project because it improves observability, troubleshooting, and execution tracing. |
+| --- | --- |
+
 Logs are treated as event streams written by the application.
 
 The current implementation logs:
@@ -312,8 +316,6 @@ The current implementation logs:
 - external API calls
 - file read failures
 - API operation failures
-
-> Summary: logging is one of the strongest operational parts of the project because it improves observability, troubleshooting, and execution tracing.
 
 In this project, Serilog uses log levels to control which events are recorded. The order of severity starts with `Debug`, followed by `Information`, `Warning`, `Error`, and `Fatal`.
 
@@ -332,9 +334,10 @@ This complements the Twelve-Factor idea of logs as event streams because the app
 
 > Run admin/management tasks as one-off processes.
 
-This factor is not fully implemented as a separate one-off administrative process in the current project.
+| Summary | maintenance is supported indirectly through logs, but there is no dedicated admin command or script yet. |
+| --- | --- |
 
-> Summary: maintenance is supported indirectly through logs, but there is no dedicated admin command or script yet.
+This factor is not fully implemented as a separate one-off administrative process in the current project.
 
 In this project, the repository does not include a dedicated script or command for administrative tasks such as:
 
