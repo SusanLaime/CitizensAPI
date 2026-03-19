@@ -4,14 +4,25 @@
 
 Access the bilingual content by selecting your preferred language above before continuing.
 
-A .NET Web API project that manages citizens through CRUD operations, CSV persistence, external API integration, and Twelve-Factor App practices.
+Citizen registry API built with ASP.NET Core, CSV persistence, external API integration, and Twelve-Factor App practices.
+
+> Academic Web API for `Certificacion I` focused on CRUD operations, external configuration, and clean project structure.
+> Status: academic project, functional for coursework, not production-ready.
+
+| Highlight | Value |
+| --- | --- |
+| API Style | Controller-based ASP.NET Core Web API |
+| Persistence | `CitizenDataStore.csv` |
+| External Service | `https://api.restful-api.dev/objects` |
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [How It Works](#how-it-works)
-- [Architecture](#architecture)
-- [Twelve-Factor App Explanation](#12-factor-app-explanation)
+- [👤 Author Information](#author-information)
+- [📌 Project Overview](#project-overview)
+- [🚀 Quick Start](#quick-start)
+- [🧭 How It Works](#how-it-works)
+- [🧱 Architecture](#architecture)
+- [📚 Twelve-Factor App Explanation](#12-factor-app-explanation)
   - [1. Codebase](#factor-1-codebase)
   - [2. Dependencies](#factor-2-dependencies)
   - [3. Config](#factor-3-config)
@@ -24,42 +35,71 @@ A .NET Web API project that manages citizens through CRUD operations, CSV persis
   - [10. Dev / Prod Parity](#factor-10-dev-prod-parity)
   - [11. Logs](#factor-11-logs)
   - [12. Admin Processes](#factor-12-admin-processes)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [Project Structure](#project-structure)
-- [Development](#development)
-- [Troubleshooting](#troubleshooting)
-- [Conclusion](#conclusion)
+- [🔌 API Endpoints](#api-endpoints)
+- [🧰 Tech Stack](#tech-stack)
+- [📋 Prerequisites](#prerequisites)
+- [🧩 Installation & Setup](#installation--setup)
+- [🗝️ Configuration](#configuration)
+- [▶️ Running the Application](#running-the-application)
+- [🗂️ Project Structure](#project-structure)
+- [💻 Development](#development)
+- [🛠️ Troubleshooting](#troubleshooting)
+- [🔒 Critical Security Notes](#critical-security-notes)
+- [🛡️ Security Improvements](#security-improvements)
+- [📚 References](#references)
+- [📞 Contact and Support](#contact-and-support)
+- [📝 Conclusion](#conclusion)
+
+<a id="author-information"></a>
+## 👤 Author Information
+
+`CitizensAPI` is an academic ASP.NET Core Web API project developed by `Susan Laime Lucero` for `Certificacion I`, `Segundo Parcial`, dated `March 18, 2026`. The project is maintained in the repository `SusanLaime/CitizensAPI`, uses ASP.NET Core with Serilog, Swagger, and CSV persistence, and is documented in both English and Spanish through `README.md` and `README.es.md`.
 
 <a id="project-overview"></a>
 ## 📌 Project Overview
 
 CitizensAPI is a .NET Web API application designed to manage citizens in a registry system. It supports CRUD operations, CSV-based persistence, external API integration, structured logging with Serilog, and configuration through `appsettings` files and environment variables.
 
-Each citizen record includes:
-
-- `FirstName`
-- `LastName`
-- `CI`
-- `BloodGroup`
-- `PersonalAsset`
-
-The application also integrates with `https://api.restful-api.dev/objects` to assign a random personal asset when a new citizen is created.
+Each citizen record includes `FirstName`, `LastName`, `CI`, `BloodGroup`, and `PersonalAsset`. The API also integrates with `https://api.restful-api.dev/objects` to assign a random personal asset when a new citizen is created.
 
 ### Key Features
 
-- **CRUD Operations:** Create, retrieve, update, and delete citizens
-- **CSV Persistence:** Store citizen records in `CitizenDataStore.csv`
-- **External API Integration:** Retrieve random objects to assign personal assets
-- **Random Blood Group Assignment:** Automatically assign a valid blood group during citizen creation
-- **Controller-Based Architecture:** Organize endpoints using ASP.NET Core controllers
-- **Environment-Based Configuration:** Load settings from `appsettings.json`, `appsettings.Development.json`, and environment variables
-- **Serilog Logging:** Record application events to the console and log files
-- **Swagger Support:** Enable interactive API testing in the development environment
-- **Twelve-Factor Alignment:** Document how the project applies Twelve-Factor App principles in practice
+| Feature | Description |
+| --- | --- |
+| CRUD Operations | Create, retrieve, update, and delete citizens |
+| CSV Persistence | Store citizen records in `CitizenDataStore.csv` |
+| External API Integration | Retrieve random objects to assign personal assets |
+| Random Blood Group Assignment | Automatically assign a valid blood group during citizen creation |
+| Controller-Based Architecture | Organize endpoints using ASP.NET Core controllers |
+| Environment-Based Configuration | Load settings from `appsettings.json`, `appsettings.Development.json`, and environment variables |
+| Serilog Logging | Record application events to the console and log files |
+| Swagger Support | Enable interactive API testing in the development environment |
+| Twelve-Factor Alignment | Document how the project applies Twelve-Factor App principles in practice |
+
+<a id="quick-start"></a>
+## 🚀 Quick Start
+
+Before starting, make sure you have the .NET 10 SDK installed and an internet connection available so dependencies can be restored from NuGet and the external API can be reached.
+
+> Important: `dotnet restore` downloads the project dependencies, and `dotnet build` verifies that the API compiles before you run it.
+
+If you only want to run the API quickly, use this single flow:
+
+```bash
+git clone https://github.com/SusanLaime/CitizensAPI.git
+cd CitizensAPI
+dotnet restore
+dotnet build
+dotnet run
+```
+
+Then open:
+
+- Swagger UI: `https://localhost:9070/swagger`
+- OpenAPI document: `https://localhost:9070/openapi/v1.json`
+- Base route for citizens: `https://localhost:9070/api/Citizen`
+
+In the current implementation, Swagger uses the document version `v1` and the UI label `My API V1`.
 
 <a id="how-it-works"></a>
 ## 🧭 How It Works
@@ -83,24 +123,28 @@ The architectural decisions, configuration flow, execution model, and operationa
 <a id="architecture"></a>
 ## 🧱 Architecture
 
-```text
-Program.cs
-   |
-   v
-Configuration + Serilog + Dependencies Registration
-   |
-   v
-CitizenController
-   |
-   v
-Request Handling + CRUD Flow
-   |
-   +--> CSVHelper --> CitizenDataStore.csv
-   |
-   +--> CitizenBGService --> External API
-```
+![Architecture Diagram](assets/architecture-diagram.png)
 
-The application starts in `Program.cs`, where configuration, logging, dependency registration, and middleware are initialized. Incoming HTTP requests are handled by `CitizenController`, which coordinates request handling, CRUD operations, CSV persistence through `CSVHelper`, and external object retrieval through `CitizenBGService`.
+The application follows a layered architecture typical of an ASP.NET Core Web API.
+
+### 🔵 Entry Layer
+Handles the application startup and incoming requests.
+
+- **Program.cs**: Configures the application, including dependency injection, logging, middleware, and Swagger.
+- **Controllers**: Handle incoming HTTP requests and coordinate the application flow.
+
+### 🟢 Application Layer
+Contains the core logic and data structures of the system.
+
+- **Models**: Define the data structures and request/response objects.
+- **Services**: Manage business logic and communication with external APIs.
+- **Utils**: Handle CSV persistence operations and file management.
+
+### 🟡 Infrastructure Layer
+Manages external systems and data persistence.
+
+- **External API**: Provides additional data from outside the application.
+- **Persistence File (`CitizenDataStore.csv`)**: Stores and retrieves application data.
 
 <a id="12-factor-app-explanation"></a>
 ## 📚 Twelve-Factor App Explanation
@@ -121,12 +165,21 @@ Keeping the project in a single shared codebase with visible history supports tr
 
 Dependencies are explicitly declared in the project file `CitizensAPI.csproj`.
 
-Main dependencies:
+Current package references:
 
-- `Microsoft.AspNetCore.OpenApi`
-- `Swashbuckle.AspNetCore`
-- `Newtonsoft.Json`
-- `Serilog`
+| Package | Version |
+| --- | --- |
+| `Microsoft.AspNetCore.OpenApi` | `10.0.3` |
+| `Newtonsoft.Json` | `13.0.4` |
+| `Swashbuckle.AspNetCore` | `10.1.5` |
+| `Swashbuckle.AspNetCore.Swagger` | `10.1.5` |
+| `Swashbuckle.AspNetCore.SwaggerGen` | `10.1.5` |
+| `Swashbuckle.AspNetCore.SwaggerUI` | `10.1.5` |
+| `Serilog` | `4.3.1` |
+| `Serilog.AspNetCore` | `10.0.0` |
+| `Serilog.Settings.Configuration` | `10.0.0` |
+| `Serilog.Sinks.Console` | `6.1.1` |
+| `Serilog.Sinks.File` | `7.0.0` |
 
 <a id="factor-3-config"></a>
 ### 3. Config
@@ -207,6 +260,9 @@ Current launch configuration:
 
 > Scale out via the process model.
 
+| Summary | the API is mostly stateless, but CSV persistence prevents safe horizontal scaling. |
+| --- | --- |
+
 This factor is not fully implemented in the current project.
 
 In this project, the application is designed in a mostly stateless way at the API level, but its persistence layer is a single CSV file. The project includes in-process locking for file access, which helps avoid corruption inside a single running instance. However, because the application rewrites the CSV file during create, update, and delete operations, it still does not provide full coordination for multiple processes or multiple deployed instances.
@@ -247,6 +303,9 @@ It is important to avoid machine-specific noise in the repository and keep the p
 
 > Treat logs as event streams.
 
+| Summary | logging is one of the strongest operational parts of the project because it improves observability, troubleshooting, and execution tracing. |
+| --- | --- |
+
 Logs are treated as event streams written by the application.
 
 The current implementation logs:
@@ -275,6 +334,9 @@ This complements the Twelve-Factor idea of logs as event streams because the app
 
 > Run admin/management tasks as one-off processes.
 
+| Summary | maintenance is supported indirectly through logs, but there is no dedicated admin command or script yet. |
+| --- | --- |
+
 This factor is not fully implemented as a separate one-off administrative process in the current project.
 
 In this project, the repository does not include a dedicated script or command for administrative tasks such as:
@@ -300,7 +362,17 @@ The logs provide useful support for maintenance and administration, but they do 
 For the future, this factor could be applied more completely in this project by adding a dedicated maintenance script or command specifically created to clean, reset, seed, or migrate the CSV data.
 
 <a id="api-endpoints"></a>
-#### API Endpoints
+## 🔌 API Endpoints
+
+> Note: the response notes in this section document the current controller behavior in the repository, even when that behavior is less strict than ideal REST conventions.
+
+| Operation | Endpoint | Main Result |
+| --- | --- | --- |
+| Create citizen | `POST /api/Citizen` | Creates a citizen, assigns `BloodGroup` and `PersonalAsset` |
+| Get all citizens | `GET /api/Citizen` | Returns the current citizens list |
+| Get citizen by CI | `GET /api/Citizen/{id}` | Returns one citizen if found |
+| Update citizen | `PUT /api/Citizen/{ci}` | Updates only `FirstName` and `LastName` |
+| Delete citizen | `DELETE /api/Citizen/{ci}` | Removes one citizen by CI |
 
 ### Create Citizen
 
@@ -315,13 +387,84 @@ Behavior:
 - assigns random personal asset
 - stores the citizen in CSV
 
+Example request:
+
+```json
+{
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456
+}
+```
+
+Example created citizen shape:
+
+```json
+{
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456,
+  "bloodGroup": "O+",
+  "personalAsset": "Apple Watch"
+}
+```
+
+Current response behavior:
+
+- success returns `200 OK`
+- the controller currently returns the full citizens list after creation
+- duplicate CI returns `409 Conflict`
+- external asset service failure can return `503 Service Unavailable`
+
 ### Get All Citizens
 
 - `GET /api/Citizen`
 
+Current response behavior:
+
+- returns `200 OK` with the full citizens list
+
+Example response:
+
+```json
+[
+  {
+    "firstName": "Ana",
+    "lastName": "Lopez",
+    "ci": 123456,
+    "bloodGroup": "O+",
+    "personalAsset": "Apple Watch"
+  },
+  {
+    "firstName": "Luis",
+    "lastName": "Rojas",
+    "ci": 654321,
+    "bloodGroup": "A-",
+    "personalAsset": "Keyboard"
+  }
+]
+```
+
 ### Get Citizen By CI
 
 - `GET /api/Citizen/{id}`
+
+Current response behavior:
+
+- returns `200 OK` with the citizen when found
+- returns `200 OK` with a text message when the citizen does not exist
+
+Example response:
+
+```json
+{
+  "firstName": "Ana",
+  "lastName": "Lopez",
+  "ci": 123456,
+  "bloodGroup": "O+",
+  "personalAsset": "Apple Watch"
+}
+```
 
 ### Update Citizen
 
@@ -332,9 +475,37 @@ Business rule:
 - request body only includes `FirstName` and `LastName`
 - only `FirstName` and `LastName` are updated
 
+Example request:
+
+```json
+{
+  "firstName": "Ana Maria",
+  "lastName": "Lopez"
+}
+```
+
+Current response behavior:
+
+- returns `200 OK` with the full citizens list after update
+- if the CI is missing, the controller currently returns `200 OK` with a text message
+
 ### Delete Citizen
 
 - `DELETE /api/Citizen/{ci}`
+
+Current response behavior:
+
+- returns `200 OK` with the deleted citizen when found
+- if the CI is missing, the controller currently returns `200 OK` with a text message
+
+### Example CSV Format
+
+File: `CitizenDataStore.csv`
+
+```csv
+Susan,Laime,1,O+,Laptop
+Juan,Perez,2,A-,Mouse
+```
 
 <a id="operational-notes"></a>
 #### Operational Notes
@@ -350,10 +521,10 @@ All these elements can help an administrator understand how the application is c
 <a id="tech-stack"></a>
 ## 🧰 Tech Stack
 
-- **Framework:** ASP.NET Core Web API (.NET 10)
+- **Framework:** ASP.NET Core Web API (`net10.0`)
 - **Language:** C#
-- **API Documentation:** Swagger / Swashbuckle
-- **Logging:** Serilog
+- **API Documentation:** OpenAPI + Swagger / Swashbuckle
+- **Logging:** Serilog with console and file sinks
 - **External HTTP Integration:** `HttpClient`
 - **JSON Handling:** Newtonsoft.Json
 - **Configuration:** `appsettings.json`, `appsettings.Development.json`, and environment variables
@@ -373,17 +544,19 @@ Before running the project, make sure the following tools are available:
 <a id="installation--setup"></a>
 ## 🧩 Installation & Setup
 
-1. Clone the repository.
-2. Open the project in your editor or IDE.
-3. Restore and build the project.
-4. Review the configuration files.
+1. Clone the repository, restore dependencies, build, and run the API.
+2. Open the project in your editor or IDE if you want to review or modify the code.
+3. Review the configuration files if you need to change paths, logging, or environment values.
 
-### Step 1: Clone the Repository
+### Step 1: Clone, Restore, Build, and Run
 
 ```bash
 # SSH
 git clone git@github.com:SusanLaime/CitizensAPI.git
 cd CitizensAPI
+dotnet restore
+dotnet build
+dotnet run
 ```
 
 or 
@@ -391,27 +564,18 @@ or
 #HTTPS
 git clone https://github.com/SusanLaime/CitizensAPI.git
 cd CitizensAPI
+dotnet restore
+dotnet build
+dotnet run
 ```
+
+This sequence downloads the project dependencies, verifies that the code compiles, and starts the API locally.
 
 ### Step 2: Open the Project
 
-Open the solution in Visual Studio or open the project folder in Visual Studio Code.
+Open the solution file in Visual Studio or open the project folder in Visual Studio Code.
 
-### Step 3: Restore and Build the Project
-
-Restore dependencies using:
-
-```bash
-dotnet restore
-```
-
-Build the application using:
-
-```bash
-dotnet build
-```
-
-### Step 4: Review Configuration
+### Step 3: Review Configuration
 
 The application reads configuration from:
 
@@ -447,6 +611,30 @@ These sources control settings such as:
 
 This configuration is loaded in `Program.cs`, allowing the application to keep operational values outside the business logic.
 
+Example values from the current project:
+
+```json
+{
+  "Data": {
+    "Location": "D:\\UPB D\\UPB 5th Semester\\Certification I\\CitizensAPI\\CitizensAPI\\CitizenDataStore.csv"
+  },
+  "External Services": {
+    "ObjectsApi": {
+      "BaseUrl": "https://api.restful-api.dev/"
+    }
+  }
+}
+```
+
+Note: in the current development configuration, `Data:Location` uses an absolute local Windows path. This matches the repository as it is now, but it reduces portability unless it is overridden through configuration or environment variables.
+
+Example environment variable overrides:
+
+```powershell
+$env:Data__Location="D:\\path\\to\\CitizenDataStore.csv"
+$env:ASPNETCORE_ENVIRONMENT="Development"
+```
+
 <a id="running-the-application"></a>
 ## ▶️ Running the Application
 
@@ -464,6 +652,7 @@ When the environment is set to `Development`, the application also enables:
 
 - Swagger UI for endpoint testing
 - development-specific configuration from `appsettings.Development.json`
+- OpenAPI mapping through `app.MapOpenApi()`
 
 ### Notes
 
@@ -504,35 +693,26 @@ CitizensAPI/
 
 Generated runtime artifacts such as `Logs/`, `bin/`, and `obj/` are not part of the core source structure and are therefore omitted from this overview.
 
-Main responsibilities:
-
-- `Controllers` exposes the API endpoints and coordinates CRUD operations
-- `Models` contains the domain entities and request models
-- `Services` handles communication with the external object API. In the current implementation, the service class is `CitizenBGService`, located in `CitizenService.cs`
-- `Utils` contains helper logic for CSV persistence
-- `Program.cs` configures the application pipeline, services, logging, and Swagger
+| Area | Responsibility |
+| --- | --- |
+| `Controllers` | Exposes the API endpoints and coordinates CRUD operations |
+| `Models` | Contains the domain entities and request models |
+| `Services` | Handles communication with the external object API through `CitizenBGService` |
+| `Utils` | Contains helper logic for CSV persistence |
+| `Program.cs` | Configures the application pipeline, services, logging, and Swagger |
 
 <a id="development"></a>
 ## 💻 Development
 
 ### Development Workflow
 
-1. **Open the Project**
-   - Open the project in Visual Studio or Visual Studio Code
-
-2. **Make Changes**
-   - Modify controllers, services, models, configuration files, or utilities depending on the feature being implemented
-
-3. **Build the Project**
-   - Run `dotnet build` to verify that the code compiles correctly
-
-4. **Run the Application**
-   - Run `dotnet run` to validate the behavior locally
-
-5. **Verify the Changes**
-   - Test endpoints with Swagger
-   - Review logs generated by Serilog
-   - Confirm that CSV persistence behaves correctly
+| Step | Action |
+| --- | --- |
+| 1 | Open the project in Visual Studio or Visual Studio Code |
+| 2 | Modify controllers, services, models, configuration files, or utilities |
+| 3 | Run `dotnet build` to verify that the project compiles |
+| 4 | Run `dotnet run` to validate the behavior locally |
+| 5 | Test endpoints with Swagger and review logs plus CSV persistence |
 
 ### Code Style
 
@@ -547,32 +727,23 @@ Main responsibilities:
 
 ### Key Development Patterns
 
-1. **Controllers**
-   - Handle HTTP requests and coordinate the application flow
-
-2. **Services**
-   - Encapsulate external API communication and supporting logic
-
-3. **Models**
-   - Represent request bodies and domain entities
-
-4. **Utilities**
-   - Centralize reusable helper logic such as CSV file operations
-
-5. **Configuration**
-   - Keep runtime settings outside the business logic through app settings files and environment variables
-
-6. **Logging**
-   - Use Serilog to record development and runtime events with appropriate log levels
+| Element | Purpose |
+| --- | --- |
+| Controllers | Handle HTTP requests and coordinate the application flow |
+| Services | Encapsulate external API communication and supporting logic |
+| Models | Represent request bodies and domain entities |
+| Utilities | Centralize reusable helper logic such as CSV file operations |
+| Configuration | Keep runtime settings outside the business logic through app settings files and environment variables |
+| Logging | Use Serilog to record development and runtime events with appropriate log levels |
 
 ### Validation During Development
 
-The project is currently validated through:
-
-- `dotnet build` to verify successful compilation
-- `dotnet run` to execute the API locally
-- Swagger to test the endpoints interactively
-- Serilog outputs to review runtime behavior and errors
+| Validation | Purpose |
+| --- | --- |
+| `dotnet build` | Verify successful compilation |
+| `dotnet run` | Execute the API locally |
+| Swagger | Test endpoints interactively |
+| Serilog outputs | Review runtime behavior and errors |
 
 ### Build for Production
 
@@ -589,81 +760,14 @@ Running `dotnet publish -c Release` does not change the normal development workf
 <a id="troubleshooting"></a>
 ## 🛠️ Troubleshooting
 
-### Build Issues
-
-If the project does not build correctly, run:
-
-```bash
-dotnet restore
-dotnet build
-```
-
-Make sure that:
-
-- the .NET SDK 10.0 is installed correctly
-- all NuGet dependencies are restored
-- the project file `CitizensAPI.csproj` is valid
-- there are no syntax errors in recently modified files
-
-### Run Issues
-
-If the application does not start correctly, run:
-
-```bash
-dotnet run
-```
-
-Verify that:
-
-- the project builds successfully first
-- the configured port is not already in use
-- the values in `launchSettings.json` are valid
-- the environment configuration is correct
-
-### Configuration Issues
-
-If the application cannot find files or services, verify the following configuration sources:
-
-- `appsettings.json`
-- `appsettings.Development.json`
-- `Properties/launchSettings.json`
-
-Pay special attention to:
-
-- `Data:Location`
-- `External Services:ObjectsApi:BaseUrl`
-- `ASPNETCORE_ENVIRONMENT`
-
-Incorrect values in these settings may prevent the application from reading the CSV file or connecting to the external API.
-
-### External API Issues
-
-If personal assets are not being assigned correctly:
-
-- verify that `https://api.restful-api.dev/objects` is reachable
-- verify that the configured base URL is correct
-- review warning and error logs generated by Serilog
-- confirm that the external API is returning valid data
-
-### CSV Persistence Issues
-
-If citizen data is not being stored or updated correctly:
-
-- verify that the configured CSV path exists
-- verify that the application has permission to read and write the file
-- confirm that the CSV file format is valid
-- review logs for file read or write errors
-
-### Logging Issues
-
-If logs are not appearing as expected, verify:
-
-- Serilog configuration in `appsettings.json`
-- Serilog configuration in `appsettings.Development.json`
-- the configured `MinimumLevel`
-- the existence of the output log path
-
-Also confirm that the application is running in the expected environment so the correct configuration file is loaded.
+| Issue | Check |
+| --- | --- |
+| Build issues | Run `dotnet restore` and `dotnet build`, verify .NET 10 SDK, restored NuGet packages, and `CitizensAPI.csproj` validity |
+| Run issues | Run `dotnet run`, confirm the project builds first, the port is free, and `launchSettings.json` values are valid |
+| Configuration issues | Review `appsettings.json`, `appsettings.Development.json`, `Properties/launchSettings.json`, `Data:Location`, `External Services:ObjectsApi:BaseUrl`, and `ASPNETCORE_ENVIRONMENT` |
+| External API issues | Verify `https://api.restful-api.dev/objects` is reachable, the base URL is correct, and logs do not show API failures |
+| CSV persistence issues | Confirm the CSV path exists, the app has file permissions, and the file content is valid |
+| Logging issues | Review Serilog settings, `MinimumLevel`, output paths, and the selected environment |
 
 ### Common Validation Commands
 
@@ -673,6 +777,55 @@ dotnet build
 dotnet run
 dotnet publish -c Release
 ```
+
+<a id="critical-security-notes"></a>
+## 🔒 Critical Security Notes
+
+> Critical: the current API does not implement authentication or authorization, so it should be treated as an academic project and not as a production-ready secure service.
+
+From a cybersecurity perspective, the most critical limitation in the current project is the absence of authentication and authorization. Any client that can reach the API can create, read, update, or delete citizen records, which means access to personal information is not properly restricted.
+
+Other relevant security risks are also present:
+
+- `CitizenDataStore.csv` is acceptable for academic practice, but it is not a strong persistence mechanism for confidentiality, integrity, auditing, or controlled concurrent access
+- the external API used for personal assets should be treated as untrusted input and its responses should always be validated carefully
+- logs are useful for observability, but in a real deployment they must avoid exposing unnecessary personal data or sensitive internal details
+
+The project already has some positive security foundations, including local HTTPS, configuration outside the codebase, Swagger limited to development, and structured logging through Serilog. Even so, the current state should be understood as an academic implementation rather than a production-ready secure system.
+
+<a id="security-improvements"></a>
+## 🛡️ Security Improvements
+
+If the project evolves beyond the academic scope, the most important improvements would be:
+
+- add authentication and authorization to control who can access or modify citizen records
+- replace CSV persistence with a database that provides stronger access control, integrity, and auditability
+- strengthen input validation and external API response validation
+- reduce sensitive logging in production and use stricter log levels outside development
+- keep administrative actions controlled and auditable
+- maintain protected branches and controlled merges as part of secure development practice
+
+<a id="references"></a>
+## 📚 References
+
+1. Wiggins, A. (2017). *The Twelve-Factor App*. https://12factor.net/
+2. GitHub. (n.d.). *Managing rulesets for a repository*. GitHub Docs. https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets
+3. GitHub. (n.d.). *Managing protected branches*. GitHub Docs. https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches
+4. Microsoft. (n.d.). *ASP.NET Core configuration*. Microsoft Learn. https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/
+5. Microsoft. (2022, April 13). *Storing application secrets safely during development*. Microsoft Learn. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
+6. OWASP Foundation. (2023). *OWASP API Security Top 10*. https://owasp.org/API-Security/
+7. serilog. (n.d.). *Serilog.AspNetCore*. GitHub. https://github.com/serilog/serilog-aspnetcore
+
+<a id="contact-and-support"></a>
+## 📞 Contact and Support
+
+If you have questions about the project, the implementation, or the course delivery, you can contact me here:
+
+- Author: Susan Laime Lucero
+- Email: `susanlaimel1@upb.edu`
+- Last updated: March 18, 2026
+- Status: Academic project in working state
+- License: MIT License
 
 <a id="conclusion"></a>
 ## 📝 Conclusion
