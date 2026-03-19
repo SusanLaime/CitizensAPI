@@ -42,8 +42,8 @@ Citizen registry API built with ASP.NET Core, CSV persistence, external API inte
 - [🛠️ Troubleshooting](#troubleshooting)
 - [🔒 Critical Security Notes](#critical-security-notes)
 - [🛡️ Security Improvements](#security-improvements)
-- [📚 References](#references)
 - [📝 Conclusion](#conclusion)
+- [📚 References](#references)
 
 
 <a id="author-background"></a>
@@ -102,7 +102,8 @@ The [Twelve-Factor App Explanation](#12-factor-app-explanation) section below co
 <a id="architecture"></a>
 ## 🧱 Architecture: Controller-Based ASP.NET Core Web API
 
-![Architecture Diagram](assets/architecture-diagram.png)<br>
+![Architecture Diagram](assets/architecture-diagram.png)
+
 Source: Own elaboration. <br>
 
 The project follows a controller-based ASP.NET Core Web API architecture organized in layers. At the top, the entry layer includes `Program.cs` and the controllers, which configure the application and receive HTTP requests through the API endpoints. The application layer contains `Models`, `Services`, and `Utils`, where the data structures, business logic, external API communication, and CSV file handling are organized. The infrastructure layer includes the external API and the `CitizenDataStore.csv` file, which provide the external data source and the persistence mechanism used by the system.
@@ -738,7 +739,6 @@ If the project evolves beyond the academic scope, the most important improvement
 ## 📝 Conclusion
 
 This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors, such as concurrency and admin processes, are not or only partially implemented, the repository documents both what is already working and what could be improved in a future version.
-
 <a id="references"></a>
 ## 📚 References
 
@@ -749,3 +749,5 @@ This project applies the Twelve-Factor App principles at a practical level by co
 5. Microsoft. (2022, April 13). *Storing application secrets safely during development*. Microsoft Learn. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
 6. OWASP Foundation. (2023). *OWASP API Security Top 10*. https://owasp.org/API-Security/
 7. serilog. (n.d.). *Serilog.AspNetCore*. GitHub. https://github.com/serilog/serilog-aspnetcore
+
+
