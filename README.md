@@ -111,8 +111,7 @@ At a higher level, `try-catch` is used in operations that are more exposed to ru
 <a id="architecture"></a>
 ## 🧱 Architecture: Controller-Based ASP.NET Core Web API
 
-![Architecture Diagram](assets/architecture-diagram.png)
-
+![Architecture Diagram](assets/architecture-diagram.png)<br>
 Source: Own elaboration. <br>
 
 The project follows a controller-based ASP.NET Core Web API architecture organized in layers. At the top, the entry layer includes `Program.cs` and the controllers, which configure the application and receive HTTP requests through the API endpoints. The application layer contains `Models`, `Services`, and `Utils`, where the data structures, business logic, external API communication, and CSV file handling are organized. The infrastructure layer includes the external API and the `CitizenDataStore.csv` file, which provide the external data source and the persistence mechanism used by the system.
