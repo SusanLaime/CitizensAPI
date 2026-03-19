@@ -98,9 +98,8 @@ La seccion [Explicacion de Twelve-Factor App](#12-factor-app-explanation) conect
 <a id="architecture"></a>
 ## 🧱 Arquitectura: Controller-Based ASP.NET Core Web API
 
-![Diagrama de Arquitectura](assets/architecture-diagram.png)
-
-Source: Own elaboration. <br>
+![Diagrama de Arquitectura](assets/architecture-diagram.png)<br>
+Fuente: Elaboración Propia. <br>
 
 El proyecto sigue una arquitectura de ASP.NET Core Web API basada en controllers y organizada por capas. En la parte superior, la capa de entrada incluye `Program.cs` y los controllers, que configuran la aplicacion y reciben las solicitudes HTTP mediante los endpoints de la API. La capa de aplicacion contiene `Models`, `Services` y `Utils`, donde se organiza la estructura de datos, la logica del negocio, la comunicacion con la API externa y el manejo del archivo CSV. La capa de infraestructura incluye la API externa y el archivo `CitizenDataStore.csv`, que actuan como la fuente de datos externa y el mecanismo de persistencia usado por el sistema.
 

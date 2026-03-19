@@ -102,8 +102,7 @@ The [Twelve-Factor App Explanation](#12-factor-app-explanation) section below co
 <a id="architecture"></a>
 ## 🧱 Architecture: Controller-Based ASP.NET Core Web API
 
-![Architecture Diagram](assets/architecture-diagram.png)
-
+![Architecture Diagram](assets/architecture-diagram.png)<br>
 Source: Own elaboration. <br>
 
 The project follows a controller-based ASP.NET Core Web API architecture organized in layers. At the top, the entry layer includes `Program.cs` and the controllers, which configure the application and receive HTTP requests through the API endpoints. The application layer contains `Models`, `Services`, and `Utils`, where the data structures, business logic, external API communication, and CSV file handling are organized. The infrastructure layer includes the external API and the `CitizenDataStore.csv` file, which provide the external data source and the persistence mechanism used by the system.
@@ -735,6 +734,11 @@ If the project evolves beyond the academic scope, the most important improvement
 - keep administrative actions controlled and auditable
 - maintain protected branches and controlled merges as part of secure development practice
 
+<a id="conclusion"></a>
+## 📝 Conclusion
+
+This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors, such as concurrency and admin processes, are not or only partially implemented, the repository documents both what is already working and what could be improved in a future version.
+
 <a id="references"></a>
 ## 📚 References
 
@@ -745,9 +749,3 @@ If the project evolves beyond the academic scope, the most important improvement
 5. Microsoft. (2022, April 13). *Storing application secrets safely during development*. Microsoft Learn. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/secure-net-microservices-web-applications/developer-app-secrets-storage
 6. OWASP Foundation. (2023). *OWASP API Security Top 10*. https://owasp.org/API-Security/
 7. serilog. (n.d.). *Serilog.AspNetCore*. GitHub. https://github.com/serilog/serilog-aspnetcore
-
-
-<a id="conclusion"></a>
-## 📝 Conclusion
-
-This project applies the Twelve-Factor App principles at a practical level by combining configuration management, backing service integration, structured logging, and a simple maintenance-oriented architecture. Although some factors, such as concurrency and admin processes, are not or only partially implemented, the repository documents both what is already working and what could be improved in a future version.
